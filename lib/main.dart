@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'base/line.dart';
 import 'canvasWidget.dart';
+import 'cardLineWidget.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,29 +32,13 @@ Widget mainWidget() {
       children: [
         canvasWidget(),
         sendButtonWidget(),
-        cardItemWidget(),
+        cardItemWidget(Line(Offset(50, 100), 100, 45)),
       ],
     ),
   );
 }
 
-Widget cardItemWidget() {
-  Line line = Line(Offset(50, 100), 100, 45);
-  return SizedBox(
-    child: Card(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(child: TextFormField(initialValue: "result1", )),
-              Container(child: TextFormField(initialValue: "result")),
-            ],
-          ),
-        ],
-      ),
-    ),
-  );
-}
+
 
 Widget sendButtonWidget() {
   return TextButton(
