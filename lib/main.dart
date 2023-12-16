@@ -1,10 +1,14 @@
+import 'package:cad_web_sketcher/base/figure.dart';
 import 'package:flutter/material.dart';
 
+import 'base/line.dart';
 import 'canvasWidget.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
+
+final Figure figure = genFig();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,60 +16,75 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: MyCanvasWidget(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
-    );
+        home: mainWidget());
   }
+}
+
+Widget mainWidget() {
+  return SingleChildScrollView(
+    child: Column(
+      children: [
+        canvasWidget(),
+        sendButtonWidget(),
+        cardItemWidget(),
+      ],
+    ),
+  );
+}
+
+Widget cardItemWidget() {
+  Line line = Line(Offset(50, 100), 100, 45);
+  return SizedBox(
+    child: Card(
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(child: TextFormField(initialValue: "result1", )),
+              Container(child: TextFormField(initialValue: "result")),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget sendButtonWidget() {
+  return TextButton(
+    onPressed: () {},
+    child: Container(
+      color: Colors.green,
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      child: const Text(
+        'Flat Button',
+        style: TextStyle(color: Colors.white, fontSize: 13.0),
+      ),
+    ),
+  );
+}
+
+Widget canvasWidget() {
+  return SizedBox(
+    width: 800.0,
+    height: 800.0,
+    child: Card(
+      color: Colors.green,
+      child: MyCanvasWidget(),
+    ),
+  );
+}
+
+Figure genFig() {
+  Figure figure = Figure(Offset(0, 0));
+  figure.addLine(0, 500);
+  figure.addLine(90, 500);
+  figure.addLine(180, 500);
+  figure.addLine(-90, 500);
+  return figure;
 }

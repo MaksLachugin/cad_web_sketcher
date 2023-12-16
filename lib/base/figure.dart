@@ -6,7 +6,9 @@ class Figure {
   List<Line> lines = <Line>[];
   Offset startPoint;
 
-  Figure([this.startPoint = const Offset(500, 500)]);
+  Figure([this.startPoint = const Offset(50, 50)]);
+
+  get length => lines.length;
 
   int addLine(double angle, int len) {
     if (lines.isEmpty) {

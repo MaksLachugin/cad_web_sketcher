@@ -6,7 +6,7 @@ class MyCanvasWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: MyPainter(), child: SizedBox.square(),
+      painter: MyPainter(),
     );
   }
 }
@@ -14,11 +14,11 @@ class MyCanvasWidget extends StatelessWidget {
 class MyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Figure figure = Figure();
-    figure.addLine(-30, 100);
-    figure.addLine(30, 100);
-    figure.addLine(-45, 100);
-    figure.addLine(-170, 700);
+    Figure figure = Figure(Offset(0,0));
+    figure.addLine(0, 500);
+    figure.addLine(90, 500);
+    figure.addLine(180, 500);
+    figure.addLine(-90, 500);
 
     Paint paint = Paint()..color = Colors.blue;
     paint..strokeWidth = 7;
