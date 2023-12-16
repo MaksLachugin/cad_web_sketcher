@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cad_web_sketcher/base/customMath.dart';
@@ -15,11 +14,8 @@ class Line {
     if (endPoint != null) {
       return endPoint!;
     }
-    int mod = 1; // Если угол отрацательный то мы инвертируем позицию Y
-    if (angle < 0) {
-      mod = -1;
-    }
-    endPoint = Offset(point.dx + len * cosDegree(angle), point.dy + mod * len * sinDegree(angle));
+
+    endPoint = Offset(point.dx + len * cosDegree(angle), point.dy +  len * sinDegree(angle));
     return getEndPoint();
   }
 }

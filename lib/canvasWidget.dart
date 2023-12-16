@@ -1,7 +1,6 @@
-
-
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'base/figure.dart';
 
 class MyCanvasWidget extends StatelessWidget {
   @override
@@ -15,12 +14,17 @@ class MyCanvasWidget extends StatelessWidget {
 class MyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Rect rect = Rect.fromLTWH(50, 50, 200, 100);
+    Figure figure = Figure();
+    figure.addLine(-30, 100);
+    figure.addLine(30, 100);
+    figure.addLine(-45, 100);
+    figure.addLine(-170, 700);
+
     Paint paint = Paint()..color = Colors.blue;
     paint..strokeWidth = 7;
     paint..strokeCap = StrokeCap.round;
-    List<Offset> points = [Offset(50, 50), Offset(200, 200),Offset(300, 200)];
-    canvas.drawPoints(ui.PointMode.polygon, points, paint);
+
+    canvas.drawPoints(ui.PointMode.polygon, figure.listToDraw(), paint);
   }
 
   @override
