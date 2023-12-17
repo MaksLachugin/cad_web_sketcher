@@ -42,7 +42,9 @@ Widget mainWidget() {
 
 Widget sendButtonWidget() {
   return TextButton(
-    onPressed: () {},
+    onPressed: () {
+      figure.lines[1].len += 50;
+    },
     child: Container(
       color: Colors.green,
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
@@ -69,7 +71,7 @@ Figure genFig() {
   Figure figure = Figure(Offset(0, 0));
   figure.addLine(0, 500);
   figure.addLine(90, 500);
-  figure.addLine(180, 500);
+  figure.addLine(180, 600);
   figure.addLine(-90, 500);
   return figure;
 }

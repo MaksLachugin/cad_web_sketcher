@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'base/figure.dart';
 
 class MyCanvasWidget extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
