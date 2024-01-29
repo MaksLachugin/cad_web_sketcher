@@ -1,13 +1,13 @@
 import 'dart:math';
 
-double PI = 3.141592653589793238;
+const pi = 3.141592653589793238;
 
 double degreeToRadian(double degree) {
-  return degree * PI / 180;
+  return degree * pi / 180;
 }
 
 double radianToDegree(double radian) {
-  return radian * 180 / PI;
+  return radian * 180 / pi;
 }
 
 double cosDegree(double degree) {

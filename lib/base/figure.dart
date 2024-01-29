@@ -15,7 +15,7 @@ class Figure {
       lines.add(Line(startPoint, len, angle));
       return 1;
     }
-    lines.add(Line(lines.last.getEndPoint(), len, angle));
+    lines.add(Line(lines.last.endPoint!, len, angle));
     return 1;
   }
 
@@ -24,9 +24,9 @@ class Figure {
 
     res.add(startPoint);
 
-    lines.forEach((element) {
-      res.add(element.getEndPoint());
-    });
+    for (var element in lines) {
+      res.add(element.endPoint!);
+    }
 
     return res;
   }

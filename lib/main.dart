@@ -1,9 +1,10 @@
+import 'dart:js';
+
 import 'package:cad_web_sketcher/base/figure.dart';
 import 'package:flutter/material.dart';
 
 import 'base/line.dart';
 import 'canvasWidget.dart';
-import 'cardLineWidget.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,26 +20,25 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.black,
+
         ),
         home: mainWidget());
   }
 }
 
 Widget mainWidget() {
-  return SingleChildScrollView(
-    child: Column(
-      children: [
-        canvasWidget(),
-        sendButtonWidget(),
-        cardItemWidget(Line(Offset(50, 100), 100, 45)),
-      ],
+  return Scaffold(
+    body: SingleChildScrollView(
+      child: Column(
+        children: [
+          canvasWidget(),
+          sendButtonWidget(),
+        ],
+      ),
     ),
   );
 }
-
-
 
 Widget sendButtonWidget() {
   return TextButton(
@@ -46,18 +46,14 @@ Widget sendButtonWidget() {
       figure.lines[1].len += 50;
     },
     child: Container(
-      color: Colors.green,
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      child: const Text(
-        'Flat Button',
-        style: TextStyle(color: Colors.white, fontSize: 13.0),
-      ),
+      child: const Text('Flat Button'),
     ),
   );
 }
 
 Widget canvasWidget() {
-  return SizedBox(
+  return const SizedBox(
     width: 800.0,
     height: 800.0,
     child: Card(
