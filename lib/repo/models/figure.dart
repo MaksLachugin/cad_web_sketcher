@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:cad_web_sketcher/repo/utils/customMath.dart';
+import 'package:equatable/equatable.dart';
 import 'line.dart';
 
-class Figure {
+class Figure extends Equatable {
   List<Line> lines = <Line>[];
   Offset startPoint;
 
@@ -10,30 +12,43 @@ class Figure {
 
   get length => lines.length;
 
-  int addLine(double angle, int len) {
-    if (lines.isEmpty) {
-      lines.add(Line(startPoint, len, angle));
-      return 1;
-    }
-    lines.add(Line(lines.last.endPoint!, len, angle));
-    return 1;
+  void addLine(double angle, int len) {
+    lines.add(Line(len, angle));
   }
 
-  int addLineDefault() {
-    return addLine(90, 100);
+  void changeLine(int index, double angle, int len) {
+    if (lines.isEmpty) {
+      return;
+    }
+    if (index >= 0 && index < length) {
+      lines[index].angle = angle;
+      lines[index].len = len;
+    }
+  }
+
+  void addLineDefault() {
+    return addLine(90, 50);
   }
 
   List<Offset> listToDraw() {
     List<Offset> res = <Offset>[];
-
-    res.add(startPoint);
-
-    for (var element in lines) {
-      res.add(element.endPoint!);
+    Offset first = startPoint;
+    res.add(first);
+    for (var line in lines) {
+      first = genEndPoint(first, line);
+      res.add(first);
     }
-
     return res;
   }
+
+  @override
+  List<Object?> get props => [startPoint, lines];
+  //TODO add inserts
+}
+
+Offset genEndPoint(Offset point, Line line) {
+  return Offset(point.dx + line.len * cosDegree(line.angle + 180),
+      point.dy + line.len * sinDegree(line.angle));
 }
 
 Figure genFig() {

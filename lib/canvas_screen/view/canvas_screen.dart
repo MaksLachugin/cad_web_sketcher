@@ -1,6 +1,6 @@
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
-import 'package:cad_web_sketcher/canvas_screen/widgets/canvasWidget.dart';
-import 'package:cad_web_sketcher/repo/models/figure.dart';
+import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
+import 'package:cad_web_sketcher/repo/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,14 +30,45 @@ class _CanvasScreenState extends State<CanvasScreen> {
             return Column(
               children: [
                 canvasField(figure),
-                sendButtonWidget(),
+                SizedBox(height: 500, child: linesList(figure)),
+                TextButton(
+                  onPressed: () {
+                    _canvasScreenBloc.add(ReDrawCanvasScreen(figure));
+                  },
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    child: const Text('Flat Button'),
+                  ),
+                ),
+                //TODO add presets
               ],
             );
           }
-          return Container();
+          if (state is CanvasScreenLoadingFailure) return const Placeholder();
+
+          return const SizedBox(
+            height: 500,
+            child: Card(
+              color: Colors.black,
+            ),
+          );
         },
       )),
     );
+  }
+
+  ListView linesList(Figure figure) {
+    return ListView.builder(
+        itemBuilder: (context, i) {
+          Line line = figure.lines[i];
+          return LineTile(
+            figure: figure,
+            index: i,
+          );
+        },
+        // separatorBuilder: (context, index) => const Divider(),
+        itemCount: figure.length);
   }
 
   Widget canvasField(Figure figure) {
@@ -47,21 +78,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
         width: 700,
         child: Card(
           color: const Color.fromARGB(255, 130, 138, 131),
-          child: MyCanvasWidget(figure: figure),
+          child: CanvasWidget(figure: figure),
         ),
       ),
     );
   }
-}
-
-Widget sendButtonWidget() {
-  return TextButton(
-    onPressed: () {
-      // figure.lines[1].len += 50;
-    },
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-      child: const Text('Flat Button'),
-    ),
-  );
 }
