@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
-import 'base/figure.dart';
+import '../../repo/models/figure.dart';
 
 class MyCanvasWidget extends StatelessWidget {
   const MyCanvasWidget({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-
-
       painter: MyPainter(),
     );
   }
@@ -19,7 +16,7 @@ class MyCanvasWidget extends StatelessWidget {
 class MyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Figure figure = Figure(const Offset(0,0));
+    Figure figure = Figure(const Offset(0, 0));
     figure.addLine(0, 500);
     figure.addLine(90, 500);
     figure.addLine(180, 500);

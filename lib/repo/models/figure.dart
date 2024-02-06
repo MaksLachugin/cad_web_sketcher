@@ -19,6 +19,10 @@ class Figure {
     return 1;
   }
 
+  int addLineDefault() {
+    return addLine(90, 100);
+  }
+
   List<Offset> listToDraw() {
     List<Offset> res = <Offset>[];
 
@@ -30,4 +34,13 @@ class Figure {
 
     return res;
   }
+}
+
+Figure genFig() {
+  Figure figure = Figure(const Offset(0, 0));
+  figure.addLine(0, 500);
+  figure.addLine(90, 500);
+  figure.addLine(180, 600);
+  figure.addLine(-90, 500);
+  return figure;
 }

@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:cad_web_sketcher/base/customMath.dart';
+import 'package:cad_web_sketcher/repo/utils/customMath.dart';
 
 class Line {
   Offset _point;
