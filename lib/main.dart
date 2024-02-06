@@ -1,14 +1,11 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:cad_web_sketcher/cad_web_sketcher.dart';
-import 'package:cad_web_sketcher/repo/models/figure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_settings.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-
-import 'canvas_screen/widgets/canvasWidget.dart';
 
 Future<void> main() async {
   final talker = TalkerFlutter.init();

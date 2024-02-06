@@ -37,7 +37,7 @@ class Figure {
 }
 
 Figure genFig() {
-  Figure figure = Figure(const Offset(0, 0));
+  Figure figure = Figure(const Offset(150, 150));
   figure.addLine(0, 500);
   figure.addLine(90, 500);
   figure.addLine(180, 600);
