@@ -1,5 +1,7 @@
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
+import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
+import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:cad_web_sketcher/repo/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,14 +28,16 @@ class _CanvasScreenState extends State<CanvasScreen> {
         bloc: _canvasScreenBloc,
         builder: (context, state) {
           if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
-            var figure = state.figure;
+            CanvasModel canvasModel = CanvasModel.fromRoofElement(
+                RoofElements.endStripsForMetalRoofTiles);
+
             return Column(
               children: [
-                canvasField(figure),
-                SizedBox(height: 500, child: linesList(figure)),
+                canvasField(canvasModel),
+                // SizedBox(height: 500, child: linesList(figure)),
                 TextButton(
                   onPressed: () {
-                    _canvasScreenBloc.add(ReDrawCanvasScreen(figure));
+                    _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
                   },
                   child: Container(
                     padding:
@@ -71,14 +75,14 @@ class _CanvasScreenState extends State<CanvasScreen> {
         itemCount: figure.length);
   }
 
-  Widget canvasField(Figure figure) {
+  Widget canvasField(CanvasModel canvasModel) {
     return Center(
       child: SizedBox(
         height: 700,
         width: 700,
         child: Card(
           color: const Color.fromARGB(255, 130, 138, 131),
-          child: CanvasWidget(figure: figure),
+          child: CanvasWidget(canvasModel: canvasModel),
         ),
       ),
     );

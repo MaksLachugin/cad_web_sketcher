@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cad_web_sketcher/repo/models/figure.dart';
+import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -19,9 +19,9 @@ class CanvasScreenBloc extends Bloc<CanvasScreenEvent, CanvasScreenState> {
     Emitter<CanvasScreenState> emit,
   ) async {
     try {
-      emit(CanvasScreenDrawed(event.figure));
+      emit(CanvasScreenDrawed(event.canvasModel));
     } catch (e, st) {
-      emit(CanvasScreenLoadingFailure(event.figure, exception: e));
+      emit(CanvasScreenLoadingFailure(event.canvasModel, exception: e));
       GetIt.I<Talker>().handle(e, st);
     } finally {}
   }

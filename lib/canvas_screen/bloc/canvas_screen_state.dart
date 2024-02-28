@@ -1,33 +1,33 @@
 part of 'canvas_screen_bloc.dart';
 
 abstract class CanvasScreenState extends Equatable {
-  final Figure figure;
+  final CanvasModel canvasModel;
 
-  const CanvasScreenState(this.figure);
+  const CanvasScreenState(this.canvasModel);
 }
 
 class CanvasScreenInitial extends CanvasScreenState {
-  CanvasScreenInitial() : super(genFig());
+  CanvasScreenInitial() : super(CanvasModel.empty());
 
   @override
   List<Object> get props => [];
 }
 
 class CanvasScreenDrawed extends CanvasScreenState {
-  const CanvasScreenDrawed(super.figure);
+  const CanvasScreenDrawed(super.canvasModel);
 
   @override
-  List<Object?> get props => [figure];
+  List<Object?> get props => [canvasModel];
 }
 
 class CanvasScreenLoadingFailure extends CanvasScreenState {
   const CanvasScreenLoadingFailure(
-    super.figure, {
+    super.canvasModel, {
     this.exception,
   });
 
   final Object? exception;
 
   @override
-  List<Object?> get props => [figure, exception];
+  List<Object?> get props => [canvasModel, exception];
 }

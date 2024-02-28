@@ -6,11 +6,11 @@ abstract class CanvasScreenEvent extends Equatable {
 
 class ReDrawCanvasScreen extends CanvasScreenEvent {
   const ReDrawCanvasScreen(
-    this.figure,
+    this.canvasModel,
   );
 
-  final Figure figure;
+  final CanvasModel canvasModel;
 
   @override
-  List<Object?> get props => [figure];
+  List<Object?> get props => [canvasModel];
 }

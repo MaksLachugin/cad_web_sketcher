@@ -100,7 +100,8 @@ class LineTile extends StatelessWidget {
 
   void changeLine(String angle, String len) {
     if (angle.isNotEmpty && len.isNotEmpty) {
-      figure.changeLine(index, double.parse(angle), int.parse(len));
+      // figure.changeLine(index, double.parse(angle), double.parse(len));
+      print("Что-то изменилось");
     }
   }
 }

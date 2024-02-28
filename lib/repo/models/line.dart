@@ -1,20 +1,50 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 
 class Line extends Equatable {
-  int _len;
-  int get len => _len;
-  set len(int value) {
-    _len = value;
-  }
+  final double len;
 
-  double _angle;
-  double get angle => _angle;
-  set angle(double value) {
-    _angle = value;
-  }
+  final double angle;
 
-  Line(this._len, this._angle);
+  const Line(
+    this.len,
+    this.angle,
+  );
 
   @override
-  List<Object?> get props => [_len, _angle];
+  List<Object> get props => [len, angle];
+
+  Line copyWith({
+    double? len,
+    double? angle,
+  }) {
+    return Line(
+      len ?? this.len,
+      angle ?? this.angle,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'len': len,
+      'angle': angle,
+    };
+  }
+
+  factory Line.fromMap(Map<String, dynamic> map) {
+    return Line(
+      map['len'] as double,
+      map['angle'] as double,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Line.fromJson(String source) =>
+      Line.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  bool get stringify => true;
 }
