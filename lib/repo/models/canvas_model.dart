@@ -24,7 +24,6 @@ class CanvasModel {
     points = rotateFigure(points, size);
     // points = scaleToScreen(points, size, scale);
     points = goToCenterOfScreen(points, size);
-    // print(angle);
     return points;
   }
 
@@ -45,50 +44,37 @@ class CanvasModel {
   CanvasModel.fromRoofElement(RoofElements element) : figure = Figure() {
     switch (element) {
       case RoofElements.abutment:
-        angle = 90;
+        angle = -90;
         figure.addLine(0, 100);
         figure.addLine(-90, 150);
         figure.bending = [true, true];
       case RoofElements.drip:
-        angle = 0;
+        angle = 180;
         figure.addLine(0, 60);
         figure.addLine(135, 40);
         figure.bending = [false, true];
       case RoofElements.simpleRidge:
-        angle = -45;
+        angle = 135;
         figure.addLine(0, 150);
         figure.addLine(90, 150);
         figure.bending = [true, true];
       case RoofElements.snowStop:
-        angle = 0;
+        angle = 180;
         figure.addLine(0, 30);
         figure.addLine(-110, 90);
         figure.addLine(55, 110);
         figure.addLine(-125, 30);
         figure.bending = [true, true];
       case RoofElements.valleyBottom:
-        angle = 0;
-        figure.addLine(125, 90);
-        figure.addLine(90, 90);
-        // figure.addLine(-90, 90);
-        // figure.addLine(-90, 90);
-        // figure.addLine(-45, 90);
-        // figure.addLine(-45, 90);
-        // figure.addLine(-45, 90);
-        // figure.addLine(0, 90);
-        // figure.addLine(45, 90);
-        // figure.addLine(45, 90);
-        // figure.addLine(45, 90);
-        // figure.addLine(45, 90);
-
-        // figure.addLine(0, 150);
-        // figure.addLine(125, 30);
-        // figure.addLine(-90, 40);
-        // figure.addLine(-90, 30);
-        // figure.addLine(125, 150);
+        angle = -145;
+        figure.addLine(0, 150);
+        figure.addLine(125, 30);
+        figure.addLine(-90, 40);
+        figure.addLine(-90, 30);
+        figure.addLine(125, 150);
         figure.bending = [true, true];
       case RoofElements.curvedRidge:
-        angle = -135;
+        angle = 135;
         figure.addLine(0, 150);
         figure.addLine(-135, 30);
         figure.addLine(90, 40);
@@ -96,20 +82,24 @@ class CanvasModel {
         figure.addLine(-135, 150);
         figure.bending = [true, true];
       case RoofElements.endStripsForMetalRoofTiles:
+        angle = 120;
         figure.addLine(0, 20);
         figure.addLine(120, 90);
         figure.addLine(90, 85);
         figure.addLine(-135, 20);
         figure.bending = [true, true];
       case RoofElements.valleyTop:
+        angle = -145;
         figure.addLine(0, 145);
         figure.addLine(-110, 150);
         figure.bending = [true, true];
       case RoofElements.frontalLStrip:
+        angle = -90;
         figure.addLine(0, 100);
         figure.addLine(-90, 20);
         figure.bending = [false, true];
       case RoofElements.endCapForSoftFoofs:
+        angle = 180;
         figure.addLine(0, 60);
         figure.addLine(-135, 25);
         figure.addLine(45, 80);
@@ -144,23 +134,6 @@ class CanvasModel {
       return e * (minscale * scale);
     }).toList();
 
-    // center = getCenterOfScreen(size);
-    // Offset maxDistOffset = Offset.zero;
-    // points.forEach((element) {
-    //   var dist = center - element;
-    //   if (dist.distance > maxDistOffset.distance) {
-    //     maxDistOffset = dist;
-    //   }
-    // });
-
-    // var scaleIfPointOutOfScreen = center.distance / maxDistOffset.distance;
-    // print(scaleIfPointOutOfScreen);
-    // if (scaleIfPointOutOfScreen < 1) {
-    //   points = points.map((e) {
-    //     return e * (scaleIfPointOutOfScreen);
-    //   }).toList();
-    // }
-
     return points;
   }
 
@@ -185,26 +158,7 @@ class CanvasModel {
         return e;
       }).toList();
     }
-    // double maxOutTop = 0;
-    // double maxOutLeft = 0;
-    // double maxOutRight = 0;
-    // double maxOutBottom = 0;
-    // points.forEach((element) {
-    //   if (element.dx > size.width) {
-    //     maxOutRight = element.dx -size.width;
-    //   } else if (element.dy > size.height) {
-    //     maxOutBottom = element.dy-size.height;
-    //   } else if (element.dx < 0) {
-    //     maxOutLeft = element.dx;
-    //   } else if (element.dy < 0) {
-    //     maxOutTop = element.dy;
-    //   }
-    // });
 
-    // points = points.map((e) {
-    //   if
-    //   return ;
-    // })
     return points;
   }
 
@@ -214,8 +168,8 @@ class CanvasModel {
 
   List<(Offset, String)> angelTextPointsToDraw(List<Offset> points, Size size) {
     List<String> angles = figure.listAngle();
-    return List.generate(
-        angles.length, (index) => (points[index], angles[index]));
+    return List.generate(angles.length - 1,
+        (index) => (points[index + 1], "${angles[index + 1]}°"));
   }
 
   List<(Offset, String)> lenTextPointsToDraw(List<Offset> points, Size size) {

@@ -1,9 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-
 import 'package:cad_web_sketcher/repo/models/figure.dart';
-import 'package:cad_web_sketcher/repo/models/line.dart';
 
 class LineTile extends StatelessWidget {
   LineTile({
@@ -32,12 +29,11 @@ class LineTile extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                //TODO add inserts
                 IconButton(
                     onPressed: () {
                       figure.addLineDefault();
                     },
-                    icon: Icon(Icons.add)),
+                    icon: const Icon(Icons.add)),
                 SizedBox(
                   width: 100,
                   child: Row(
@@ -76,12 +72,11 @@ class LineTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                //TODO add inserts
                 IconButton(
                     onPressed: () {
                       figure.addLineDefault();
                     },
-                    icon: Icon(Icons.add)),
+                    icon: const Icon(Icons.add)),
               ],
             ),
           ),

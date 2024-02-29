@@ -42,27 +42,27 @@ class _CanvasScreenState extends State<CanvasScreen> {
                 //     child: const Text('Flat Button'),
                 //   ),
                 // ),
-                //TODO add presets
-                TextButton(
-                  onPressed: () {
-                    state.canvasModel.figure.lines[0] =
-                        state.canvasModel.figure.lines[0].copyWith(
-                            angle: state.canvasModel.figure.lines[0].angle + 5);
-                  },
-                  child: Text("+5"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    state.canvasModel.figure.lines[0] =
-                        state.canvasModel.figure.lines[0].copyWith(
-                            angle: state.canvasModel.figure.lines[0].angle - 5);
-                  },
-                  child: Text("-5"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        state.canvasModel.angle += 5;
+                      },
+                      child: const Text("+5"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        state.canvasModel.angle -= 5;
+                      },
+                      child: const Text("-5"),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   width: 250,
                   child: ExpansionTile(
-                    title: Text("RoofElements"),
+                    title: const Text("Элементы кровли"),
                     children: List.generate(
                         RoofElements.values.length,
                         (index) => Padding(
@@ -75,10 +75,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                      RoofElements.values[index]
-                                          .toString()
-                                          .substring(13),
+                                  child: Text(RoofElements.values[index].name,
                                       textAlign: TextAlign.center),
                                 ),
                               ),
@@ -104,7 +101,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
   ListView linesList(Figure figure) {
     return ListView.builder(
         itemBuilder: (context, i) {
-          Line line = figure.lines[i];
           return LineTile(
             figure: figure,
             index: i,

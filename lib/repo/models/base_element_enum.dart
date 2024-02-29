@@ -23,17 +23,17 @@ extension RoofElementsExtension on RoofElements {
       case RoofElements.snowStop:
         return "Снеговой упор";
       case RoofElements.valleyBottom:
-        return "";
+        return "Ендова нижняя";
       case RoofElements.curvedRidge:
-        return "";
+        return "Конек фигурный";
       case RoofElements.endStripsForMetalRoofTiles:
-        return "";
+        return "Торцевая для металлочерепицы";
       case RoofElements.valleyTop:
-        return "";
+        return "Ендова верхняя";
       case RoofElements.frontalLStrip:
-        return "";
+        return "Лобовая L-планка";
       case RoofElements.endCapForSoftFoofs:
-        return "";
+        return "Торцевая для мягкой кровли";
     }
   }
 }

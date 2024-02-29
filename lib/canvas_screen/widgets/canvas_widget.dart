@@ -44,8 +44,6 @@ class MyPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size, 0.8);
     drawFigure(canvas, pointsToDraw, size);
-    // canvas.drawPoints(PointMode.points,
-    //     [Offset(size.width / 2, size.height / 2)], colorPainter);
     drawListPointAndText(
         size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
     drawListPointAndText(
@@ -57,24 +55,8 @@ class MyPainter extends CustomPainter {
   void drawFigure(Canvas canvas, List<Offset> points, Size size) {
     canvas.drawPoints(PointMode.polygon, points, linePainter);
     canvas.drawPoints(PointMode.points, points, pointPainter);
-    canvas.drawPoints(PointMode.points, [points[0]], colorPainter);
-    // canvas.drawPoints(
-    //     PointMode.polygon, points.map((e) => e *= 0.95).toList(), colorPainter);
-
-    // try {
-    //   var r = fugure.listCenterWithLenToDraw();
-    //   for (var (point, text) in r) {
-    //     print(point);
-    //   }
-    //   drawListPointAndText(size, canvas, r);
-    // } catch (e) {
-    //   print('cal');
-    // }
-    // try {
-    //   drawListPointAndText(size, canvas, fugure.listPointWithAngToDraw());
-    // } catch (e) {
-    //   print('cal1');
-    // }
+    canvas.drawPoints(PointMode.points, [canvasModel.getCenterOfFigure(points)],
+        colorPainter);
   }
 
   void drawListPointAndText(

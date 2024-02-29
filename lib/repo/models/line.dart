@@ -8,10 +8,10 @@ class Line extends Equatable {
 
   final double angle;
 
-  const Line(
+  Line(
     this.len,
-    this.angle,
-  );
+    angle,
+  ) : angle = convert(angle);
 
   @override
   List<Object> get props => [len, angle];
@@ -22,7 +22,7 @@ class Line extends Equatable {
   }) {
     return Line(
       len ?? this.len,
-      angle ?? this.angle,
+      angle ?? convert(this.angle),
     );
   }
 
@@ -47,4 +47,13 @@ class Line extends Equatable {
 
   @override
   bool get stringify => true;
+}
+
+double convert(angle) {
+  if (angle >= 180) {
+    return -175;
+  } else if (angle <= -180) {
+    return 175;
+  }
+  return angle;
 }
