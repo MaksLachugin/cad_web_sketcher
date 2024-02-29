@@ -33,7 +33,7 @@ class MyPainter extends CustomPainter {
 
   Paint get colorPainter {
     Paint painter = Paint()..color = Colors.blue;
-    painter.strokeWidth = 1;
+    painter.strokeWidth = 5;
     painter.strokeCap = StrokeCap.round;
     return painter;
   }
@@ -42,13 +42,14 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size);
+    List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size, 0.8);
     drawFigure(canvas, pointsToDraw, size);
-    drawFigure(canvas, pointsToDraw, size);
-    // drawListPointAndText(
-    //     size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
-    // drawListPointAndText(
-    //     size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
+    // canvas.drawPoints(PointMode.points,
+    //     [Offset(size.width / 2, size.height / 2)], colorPainter);
+    drawListPointAndText(
+        size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
+    drawListPointAndText(
+        size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
   }
 
   void drawCanvasModel(CanvasModel cm) {}
@@ -56,6 +57,7 @@ class MyPainter extends CustomPainter {
   void drawFigure(Canvas canvas, List<Offset> points, Size size) {
     canvas.drawPoints(PointMode.polygon, points, linePainter);
     canvas.drawPoints(PointMode.points, points, pointPainter);
+    canvas.drawPoints(PointMode.points, [points[0]], colorPainter);
     // canvas.drawPoints(
     //     PointMode.polygon, points.map((e) => e *= 0.95).toList(), colorPainter);
 

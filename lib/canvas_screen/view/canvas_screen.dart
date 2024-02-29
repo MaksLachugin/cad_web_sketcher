@@ -28,24 +28,63 @@ class _CanvasScreenState extends State<CanvasScreen> {
         bloc: _canvasScreenBloc,
         builder: (context, state) {
           if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
-            CanvasModel canvasModel = CanvasModel.fromRoofElement(
-                RoofElements.endStripsForMetalRoofTiles);
-
             return Column(
               children: [
-                canvasField(canvasModel),
+                canvasField(state.canvasModel),
                 // SizedBox(height: 500, child: linesList(figure)),
+                // TextButton(
+                //   onPressed: () {
+                //     _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
+                //   },
+                //   child: Container(
+                //     padding:
+                //         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                //     child: const Text('Flat Button'),
+                //   ),
+                // ),
+                //TODO add presets
                 TextButton(
                   onPressed: () {
-                    _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
+                    state.canvasModel.figure.lines[0] =
+                        state.canvasModel.figure.lines[0].copyWith(
+                            angle: state.canvasModel.figure.lines[0].angle + 5);
                   },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    child: const Text('Flat Button'),
+                  child: Text("+5"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    state.canvasModel.figure.lines[0] =
+                        state.canvasModel.figure.lines[0].copyWith(
+                            angle: state.canvasModel.figure.lines[0].angle - 5);
+                  },
+                  child: Text("-5"),
+                ),
+                SizedBox(
+                  width: 250,
+                  child: ExpansionTile(
+                    title: Text("RoofElements"),
+                    children: List.generate(
+                        RoofElements.values.length,
+                        (index) => Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextButton(
+                                onPressed: () {
+                                  _canvasScreenBloc.add(ReDrawCanvasScreen(
+                                      CanvasModel.fromRoofElement(
+                                          RoofElements.values[index])));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                      RoofElements.values[index]
+                                          .toString()
+                                          .substring(13),
+                                      textAlign: TextAlign.center),
+                                ),
+                              ),
+                            )),
                   ),
                 ),
-                //TODO add presets
               ],
             );
           }

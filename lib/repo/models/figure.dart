@@ -17,7 +17,7 @@ class Figure extends Equatable {
     }
   }
 
-  List<Line> bendingLine = List.filled(2, Line(15, 0));
+  List<Line> bendingLine = List.filled(2, const Line(15, 0));
   List<Line> lines = <Line>[];
   List<Offset> get pointsToDraw {
     return listLinesToDraw();
@@ -43,8 +43,8 @@ class Figure extends Equatable {
     Offset first = startPoint;
     res.add(first);
     for (var line in lines) {
+      first = genEndPoint(first, line, ang);
       ang = ang + line.angle;
-      first = genEndPoint(first, line.copyWith(angle: ang));
       res.add(first);
     }
     return res;
@@ -71,13 +71,28 @@ class Figure extends Equatable {
 
   @override
   List<Object?> get props => [startPoint, lines];
-  //TODO add inserts
 }
 
-Offset genEndPoint(Offset point, Line line) {
-  double ang = (180 - line.angle) % 180;
-  return Offset(point.dx + line.len * cosDegree(ang),
-      point.dy + line.len * sinDegree(ang));
+Offset genEndPoint(Offset point, Line line, double nowAngle) {
+  double ang;
+  line = line.copyWith(angle: line.angle % -180);
+  if (line.angle % 180 == 0) {
+    ang = line.angle + nowAngle;
+  } else if (line.angle >= 0 && nowAngle >= 0) {
+    ang = (-180 + (line.angle) + nowAngle);
+  } else if (line.angle >= 0 && nowAngle <= 0) {
+    ang = line.angle + nowAngle;
+  } else if (line.angle < 0 && nowAngle >= 0) {
+    ang = -180 + line.angle - nowAngle;
+  } else if (line.angle < 0 && nowAngle <= 0) {
+    ang = (180 + line.angle) - nowAngle;
+  } else {
+    ang = line.angle;
+  }
+  print('line = ${line.angle} now= $nowAngle itog= $ang');
+  return Offset.fromDirection(degreeToRadian(ang), line.len) + point;
+  // return Offset(point.dx + line.len * cosDegree(ang),
+  //     point.dy + line.len * sinDegree(ang));
 }
 
 Figure genFig() {

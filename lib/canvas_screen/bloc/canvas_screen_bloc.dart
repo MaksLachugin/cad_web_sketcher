@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
 import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

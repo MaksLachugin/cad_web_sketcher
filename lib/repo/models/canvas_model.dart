@@ -10,23 +10,26 @@ import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 class CanvasModel {
   Offset pozCamera = const Offset(0, 0);
   Size sizeOfScreen = const Size(700, 700);
-  double angle = 35;
+  double angle = 0;
 
   Figure figure;
   CanvasModel({
     required this.figure,
   });
-  List<Offset> getPointsToDraw(Size size) {
-    List<Offset> points = figure.pointsToDraw;
+  List<Offset> getPointsToDraw(Size size, double scale) {
+    List<Offset> points = figure.pointsToDraw
+        .map((e) => Offset(e.dx, size.width - e.dy))
+        .toList();
+
     points = rotateFigure(points, size);
-    points = scaleToScreen(points, size);
+    // points = scaleToScreen(points, size, scale);
     points = goToCenterOfScreen(points, size);
+    // print(angle);
     return points;
   }
 
   List<Offset> rotateFigure(List<Offset> points, Size size) {
-    Offset center =
-        Offset(size.width / 2 + pozCamera.dx, size.height / 2 + pozCamera.dy);
+    Offset center = getCenterOfScreen(size);
     double s = sinDegree(angle);
     double c = cosDegree(angle);
 
@@ -42,31 +45,50 @@ class CanvasModel {
   CanvasModel.fromRoofElement(RoofElements element) : figure = Figure() {
     switch (element) {
       case RoofElements.abutment:
+        angle = 90;
         figure.addLine(0, 100);
         figure.addLine(-90, 150);
         figure.bending = [true, true];
       case RoofElements.drip:
+        angle = 0;
         figure.addLine(0, 60);
         figure.addLine(135, 40);
         figure.bending = [false, true];
       case RoofElements.simpleRidge:
+        angle = -45;
         figure.addLine(0, 150);
         figure.addLine(90, 150);
         figure.bending = [true, true];
       case RoofElements.snowStop:
+        angle = 0;
         figure.addLine(0, 30);
         figure.addLine(-110, 90);
         figure.addLine(55, 110);
         figure.addLine(-125, 30);
         figure.bending = [true, true];
       case RoofElements.valleyBottom:
-        figure.addLine(0, 150);
-        figure.addLine(125, 30);
-        figure.addLine(90, 40);
-        figure.addLine(-90, 30);
-        figure.addLine(125, 150);
+        angle = 0;
+        figure.addLine(125, 90);
+        figure.addLine(90, 90);
+        // figure.addLine(-90, 90);
+        // figure.addLine(-90, 90);
+        // figure.addLine(-45, 90);
+        // figure.addLine(-45, 90);
+        // figure.addLine(-45, 90);
+        // figure.addLine(0, 90);
+        // figure.addLine(45, 90);
+        // figure.addLine(45, 90);
+        // figure.addLine(45, 90);
+        // figure.addLine(45, 90);
+
+        // figure.addLine(0, 150);
+        // figure.addLine(125, 30);
+        // figure.addLine(-90, 40);
+        // figure.addLine(-90, 30);
+        // figure.addLine(125, 150);
         figure.bending = [true, true];
       case RoofElements.curvedRidge:
+        angle = -135;
         figure.addLine(0, 150);
         figure.addLine(-135, 30);
         figure.addLine(90, 40);
@@ -98,40 +120,46 @@ class CanvasModel {
   CanvasModel.empty() : figure = Figure();
 
   Offset getCenterOfFigure(List<Offset> points) {
-    double minx = 0;
-    double miny = 0;
-    double maxx = 0;
-    double maxy = 0;
-    points.forEach((element) {
-      minx = (minx > element.dx) ? element.dx : minx;
-      miny = (miny > element.dy) ? element.dy : miny;
-
-      maxx = (maxx < element.dx) ? element.dx : maxx;
-      maxy = (maxy < element.dy) ? element.dy : maxy;
-    });
-    return Offset((maxx + minx) / 2, (maxy + miny) / 2);
+    return points.reduce((a, b) => a + b) / (points.length as double);
   }
 
-  List<Offset> scaleToScreen(List<Offset> points, Size size) {
+  List<Offset> scaleToScreen(List<Offset> points, Size size, double scale) {
     var center = getCenterOfFigure(points);
     points = points.map((e) => e -= center).toList();
     double minx = 0;
     double miny = 0;
     double maxx = 0;
     double maxy = 0;
-    points.forEach((element) {
+    for (var element in points) {
       minx = (minx > element.dx) ? element.dx : minx;
       miny = (miny > element.dy) ? element.dy : miny;
 
       maxx = (maxx < element.dx) ? element.dx : maxx;
       maxy = (maxy < element.dy) ? element.dy : maxy;
-    });
-    double scalex = (size.width - 50) / (maxx - minx);
-    double scaley = (size.height - 50) / (maxy - miny);
+    }
+    double scalex = (size.width) / (maxx - minx);
+    double scaley = (size.height) / (maxy - miny);
     double minscale = min(scaley, scalex);
     points = points.map((e) {
-      return e * minscale;
+      return e * (minscale * scale);
     }).toList();
+
+    // center = getCenterOfScreen(size);
+    // Offset maxDistOffset = Offset.zero;
+    // points.forEach((element) {
+    //   var dist = center - element;
+    //   if (dist.distance > maxDistOffset.distance) {
+    //     maxDistOffset = dist;
+    //   }
+    // });
+
+    // var scaleIfPointOutOfScreen = center.distance / maxDistOffset.distance;
+    // print(scaleIfPointOutOfScreen);
+    // if (scaleIfPointOutOfScreen < 1) {
+    //   points = points.map((e) {
+    //     return e * (scaleIfPointOutOfScreen);
+    //   }).toList();
+    // }
 
     return points;
   }
@@ -139,12 +167,49 @@ class CanvasModel {
   List<Offset> goToCenterOfScreen(List<Offset> points, Size size) {
     var newCenter = getCenterOfScreen(size) - getCenterOfFigure(points);
     points = points.map((e) => e += newCenter).toList();
+    while (points.any((element) => size.contains(element))) {
+      newCenter = getCenterOfFigure(points);
+      points = points.map((e) {
+        e -= newCenter;
+        e *= 1.1;
+        e += newCenter;
+        return e;
+      }).toList();
+    }
+    while (points.any((element) => !size.contains(element))) {
+      newCenter = getCenterOfFigure(points);
+      points = points.map((e) {
+        e -= newCenter;
+        e *= 0.9;
+        e += newCenter;
+        return e;
+      }).toList();
+    }
+    // double maxOutTop = 0;
+    // double maxOutLeft = 0;
+    // double maxOutRight = 0;
+    // double maxOutBottom = 0;
+    // points.forEach((element) {
+    //   if (element.dx > size.width) {
+    //     maxOutRight = element.dx -size.width;
+    //   } else if (element.dy > size.height) {
+    //     maxOutBottom = element.dy-size.height;
+    //   } else if (element.dx < 0) {
+    //     maxOutLeft = element.dx;
+    //   } else if (element.dy < 0) {
+    //     maxOutTop = element.dy;
+    //   }
+    // });
+
+    // points = points.map((e) {
+    //   if
+    //   return ;
+    // })
     return points;
   }
 
   Offset getCenterOfScreen(Size size) {
-    Size center = size / 2;
-    return Offset(center.width, center.height);
+    return size.center(Offset.zero);
   }
 
   List<(Offset, String)> angelTextPointsToDraw(List<Offset> points, Size size) {
