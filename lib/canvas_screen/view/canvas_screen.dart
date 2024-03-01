@@ -5,6 +5,7 @@ import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:cad_web_sketcher/repo/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class CanvasScreen extends StatefulWidget {
   const CanvasScreen({super.key});
@@ -15,87 +16,129 @@ class CanvasScreen extends StatefulWidget {
 
 class _CanvasScreenState extends State<CanvasScreen> {
   final _canvasScreenBloc = CanvasScreenBloc();
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
+    installerStore: 'Unknown',
+  );
   @override
   void initState() {
     super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var textTheme = Theme.of(context).textTheme;
+    var values = [
+      (RoofElements.abutment.className, RoofElements.values),
+      (Parapets.flat.className, Parapets.values)
+    ];
+
+    String vers = _packageInfo.version;
     return Scaffold(
       body: SingleChildScrollView(
-          child: BlocBuilder<CanvasScreenBloc, CanvasScreenState>(
-        bloc: _canvasScreenBloc,
-        builder: (context, state) {
-          if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
-            return Column(
-              children: [
-                canvasField(state.canvasModel),
-                // SizedBox(height: 500, child: linesList(figure)),
-                // TextButton(
-                //   onPressed: () {
-                //     _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
-                //   },
-                //   child: Container(
-                //     padding:
-                //         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                //     child: const Text('Flat Button'),
-                //   ),
-                // ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+        children: [
+          BlocBuilder<CanvasScreenBloc, CanvasScreenState>(
+            bloc: _canvasScreenBloc,
+            builder: (context, state) {
+              if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
+                return Column(
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        state.canvasModel.angle += 5;
-                      },
-                      child: const Text("+5"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        state.canvasModel.angle -= 5;
-                      },
-                      child: const Text("-5"),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: 250,
-                  child: ExpansionTile(
-                    title: const Text("Элементы кровли"),
-                    children: List.generate(
-                        RoofElements.values.length,
-                        (index) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextButton(
-                                onPressed: () {
-                                  _canvasScreenBloc.add(ReDrawCanvasScreen(
-                                      CanvasModel.fromRoofElement(
-                                          RoofElements.values[index])));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(RoofElements.values[index].name,
-                                      textAlign: TextAlign.center),
-                                ),
+                    canvasField(state.canvasModel),
+                    // SizedBox(height: 500, child: linesList(figure)),
+                    // TextButton(
+                    //   onPressed: () {
+                    //     _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
+                    //   },
+                    //   child: Container(
+                    //     padding:
+                    //         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    //     child: const Text('Flat Button'),
+                    //   ),
+                    // ),
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Поворот элемента на эскизе: ",
+                                style: textTheme.bodyLarge,
                               ),
-                            )),
-                  ),
-                ),
-              ],
-            );
-          }
-          if (state is CanvasScreenLoadingFailure) return const Placeholder();
+                              IconButton(
+                                onPressed: () {
+                                  state.canvasModel.angle -= 5;
+                                },
+                                icon: const Icon(Icons.rotate_left),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  state.canvasModel.angle += 5;
+                                },
+                                icon: const Icon(Icons.rotate_right),
+                              ),
+                            ],
+                          ),
+                          expansionsTileFromEnums(
+                              textTheme, "Готовые элементы", values),
+                        ]),
+                  ],
+                );
+              }
+              if (state is CanvasScreenLoadingFailure) {
+                return const Placeholder();
+              }
 
-          return const SizedBox(
-            height: 500,
-            child: Card(
-              color: Colors.black,
-            ),
-          );
-        },
+              return const SizedBox(
+                height: 500,
+                child: Card(
+                  color: Colors.black,
+                ),
+              );
+            },
+          ),
+          Text(
+            "v$vers",
+            style: textTheme.bodyLarge,
+          ),
+        ],
       )),
     );
+  }
+
+  void callReDrawWithNewFigure(Enum value) {
+    _canvasScreenBloc.add(ReDrawCanvasScreen(CanvasModel.fromEnum(value)));
+  }
+
+  Widget expansionsTileFromEnums(
+      TextTheme textTheme, String name, List<(String, List<Enum>)> values) {
+    return SizedBox(
+        width: 270,
+        child: ExpansionTile(
+          title: const Text("Готовые элементы"),
+          children: List.generate(values.length, (index) {
+            var val = values[index];
+            return ExpansionTileByEnumList(
+              name: val.$1,
+              onPress: callReDrawWithNewFigure,
+              values: val.$2.map((e) => (e, getNameOfEnum(e))).toList(),
+            );
+          }),
+        ));
   }
 
   ListView linesList(Figure figure) {
@@ -113,10 +156,10 @@ class _CanvasScreenState extends State<CanvasScreen> {
   Widget canvasField(CanvasModel canvasModel) {
     return Center(
       child: SizedBox(
-        height: 700,
-        width: 700,
+        height: 900,
+        width: 900,
         child: Card(
-          color: const Color.fromARGB(255, 130, 138, 131),
+          color: const Color.fromARGB(255, 193, 201, 194),
           child: CanvasWidget(canvasModel: canvasModel),
         ),
       ),

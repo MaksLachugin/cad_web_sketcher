@@ -1,0 +1,2 @@
+flutter pub global run peanut --extra-args "--base-href=/cad_web_sketcher/"
+git push origin --set-upstream gh-pages

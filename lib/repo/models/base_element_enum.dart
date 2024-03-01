@@ -12,6 +12,13 @@ enum RoofElements {
 }
 
 extension RoofElementsExtension on RoofElements {
+  String get className {
+    switch (this) {
+      default:
+        return "Элементы кровли";
+    }
+  }
+
   String get name {
     switch (this) {
       case RoofElements.abutment:
@@ -35,5 +42,36 @@ extension RoofElementsExtension on RoofElements {
       case RoofElements.endCapForSoftFoofs:
         return "Торцевая для мягкой кровли";
     }
+  }
+}
+
+enum Parapets {
+  flat,
+  shaped,
+}
+
+extension ParapetsExtension on Parapets {
+  String get className {
+    return "Парапеты";
+  }
+
+  String get name {
+    switch (this) {
+      case Parapets.flat:
+        return "Плоский парапет";
+      case Parapets.shaped:
+        return "Фигурный парапет";
+    }
+  }
+}
+
+String getNameOfEnum(Enum value) {
+  switch (value.runtimeType) {
+    case const (RoofElements):
+      return (value as RoofElements).name;
+    case const (Parapets):
+      return (value as Parapets).name;
+    default:
+      return "Error";
   }
 }

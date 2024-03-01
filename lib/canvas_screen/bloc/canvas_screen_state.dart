@@ -8,7 +8,7 @@ abstract class CanvasScreenState extends Equatable {
 
 class CanvasScreenInitial extends CanvasScreenState {
   CanvasScreenInitial()
-      : super(CanvasModel.fromRoofElement(RoofElements.valleyBottom));
+      : super(CanvasModel.fromEnum(RoofElements.valleyBottom));
 
   @override
   List<Object> get props => [];

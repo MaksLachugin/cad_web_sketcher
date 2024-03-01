@@ -63,9 +63,7 @@ class MyPainter extends CustomPainter {
       Size size, Canvas canvas, List<(Offset, String)> elements) {
     for (var (point, text) in elements) {
       var textStyle = const TextStyle(
-        color: Colors.black,
-        fontSize: 16,
-      );
+          color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500);
       var textSpan = TextSpan(
         text: text,
         style: textStyle,

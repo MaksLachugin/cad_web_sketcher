@@ -16,6 +16,103 @@ class CanvasModel {
   CanvasModel({
     required this.figure,
   });
+  CanvasModel.fromEnum(Enum element) : figure = Figure() {
+    switch (element.runtimeType) {
+      case const (RoofElements):
+        switch (element) {
+          case RoofElements.abutment:
+            angle = -90;
+            figure.addLine(0, 100);
+            figure.addLine(-90, 150);
+            figure.bending = [true, true];
+          case RoofElements.drip:
+            angle = 180;
+            figure.addLine(0, 60);
+            figure.addLine(135, 40);
+            figure.bending = [false, true];
+          case RoofElements.simpleRidge:
+            angle = 135;
+            figure.addLine(0, 150);
+            figure.addLine(90, 150);
+            figure.bending = [true, true];
+          case RoofElements.snowStop:
+            angle = 180;
+            figure.addLine(0, 30);
+            figure.addLine(-110, 90);
+            figure.addLine(55, 110);
+            figure.addLine(-125, 30);
+            figure.bending = [true, true];
+          case RoofElements.valleyBottom:
+            angle = -145;
+            figure.addLine(0, 150);
+            figure.addLine(125, 30);
+            figure.addLine(-90, 40);
+            figure.addLine(-90, 30);
+            figure.addLine(125, 150);
+            figure.bending = [true, true];
+          case RoofElements.curvedRidge:
+            angle = 135;
+            figure.addLine(0, 150);
+            figure.addLine(-135, 30);
+            figure.addLine(90, 40);
+            figure.addLine(90, 30);
+            figure.addLine(-135, 150);
+            figure.bending = [true, true];
+          case RoofElements.endStripsForMetalRoofTiles:
+            angle = 120;
+            figure.addLine(0, 20);
+            figure.addLine(120, 90);
+            figure.addLine(90, 85);
+            figure.addLine(-135, 20);
+            figure.bending = [true, true];
+          case RoofElements.valleyTop:
+            angle = -145;
+            figure.addLine(0, 145);
+            figure.addLine(-110, 150);
+            figure.bending = [true, true];
+          case RoofElements.frontalLStrip:
+            angle = -90;
+            figure.addLine(0, 100);
+            figure.addLine(-90, 20);
+            figure.bending = [false, true];
+          case RoofElements.endCapForSoftFoofs:
+            angle = 180;
+            figure.addLine(0, 60);
+            figure.addLine(-135, 25);
+            figure.addLine(45, 80);
+            figure.bending = [false, true];
+        }
+        break;
+      case const (Parapets):
+        switch (element) {
+          case Parapets.flat:
+            angle = 135;
+            figure.addLine(0, 20);
+            figure.addLine(-135, 40);
+            figure.addLine(90, 150);
+            figure.addLine(90, 40);
+            figure.addLine(-135, 20);
+            figure.bending = [true, true];
+
+          case Parapets.shaped:
+            angle = 135;
+            figure.addLine(0, 20);
+            figure.addLine(-135, 40);
+            figure.addLine(120, 100);
+            figure.addLine(120, 100);
+            figure.addLine(120, 40);
+            figure.addLine(-135, 20);
+            figure.bending = [true, true];
+          default:
+        }
+      default:
+        angle = -90;
+        figure.addLine(0, 100);
+
+        figure.bending = [true, true];
+    }
+  }
+
   List<Offset> getPointsToDraw(Size size, double scale) {
     List<Offset> points = figure.pointsToDraw
         .map((e) => Offset(e.dx, size.width - e.dy))
@@ -39,72 +136,6 @@ class CanvasModel {
       return e;
     }).toList();
     return points;
-  }
-
-  CanvasModel.fromRoofElement(RoofElements element) : figure = Figure() {
-    switch (element) {
-      case RoofElements.abutment:
-        angle = -90;
-        figure.addLine(0, 100);
-        figure.addLine(-90, 150);
-        figure.bending = [true, true];
-      case RoofElements.drip:
-        angle = 180;
-        figure.addLine(0, 60);
-        figure.addLine(135, 40);
-        figure.bending = [false, true];
-      case RoofElements.simpleRidge:
-        angle = 135;
-        figure.addLine(0, 150);
-        figure.addLine(90, 150);
-        figure.bending = [true, true];
-      case RoofElements.snowStop:
-        angle = 180;
-        figure.addLine(0, 30);
-        figure.addLine(-110, 90);
-        figure.addLine(55, 110);
-        figure.addLine(-125, 30);
-        figure.bending = [true, true];
-      case RoofElements.valleyBottom:
-        angle = -145;
-        figure.addLine(0, 150);
-        figure.addLine(125, 30);
-        figure.addLine(-90, 40);
-        figure.addLine(-90, 30);
-        figure.addLine(125, 150);
-        figure.bending = [true, true];
-      case RoofElements.curvedRidge:
-        angle = 135;
-        figure.addLine(0, 150);
-        figure.addLine(-135, 30);
-        figure.addLine(90, 40);
-        figure.addLine(90, 30);
-        figure.addLine(-135, 150);
-        figure.bending = [true, true];
-      case RoofElements.endStripsForMetalRoofTiles:
-        angle = 120;
-        figure.addLine(0, 20);
-        figure.addLine(120, 90);
-        figure.addLine(90, 85);
-        figure.addLine(-135, 20);
-        figure.bending = [true, true];
-      case RoofElements.valleyTop:
-        angle = -145;
-        figure.addLine(0, 145);
-        figure.addLine(-110, 150);
-        figure.bending = [true, true];
-      case RoofElements.frontalLStrip:
-        angle = -90;
-        figure.addLine(0, 100);
-        figure.addLine(-90, 20);
-        figure.bending = [false, true];
-      case RoofElements.endCapForSoftFoofs:
-        angle = 180;
-        figure.addLine(0, 60);
-        figure.addLine(-135, 25);
-        figure.addLine(45, 80);
-        figure.bending = [false, true];
-    }
   }
 
   CanvasModel.empty() : figure = Figure();

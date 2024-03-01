@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:cad_web_sketcher/repo/models/figure.dart';
+import 'package:get_it/get_it.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class LineTile extends StatelessWidget {
   LineTile({
@@ -96,7 +98,7 @@ class LineTile extends StatelessWidget {
   void changeLine(String angle, String len) {
     if (angle.isNotEmpty && len.isNotEmpty) {
       // figure.changeLine(index, double.parse(angle), double.parse(len));
-      print("Что-то изменилось");
+      GetIt.I<Talker>().debug("Что-то изменилось");
     }
   }
 }
