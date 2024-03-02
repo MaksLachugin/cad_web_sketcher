@@ -57,17 +57,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                 return Column(
                   children: [
                     canvasField(state.canvasModel),
-                    // SizedBox(height: 500, child: linesList(figure)),
-                    // TextButton(
-                    //   onPressed: () {
-                    //     _canvasScreenBloc.add(ReDrawCanvasScreen(canvasModel));
-                    //   },
-                    //   child: Container(
-                    //     padding:
-                    //         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    //     child: const Text('Flat Button'),
-                    //   ),
-                    // ),
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -96,6 +85,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
                           expansionsTileFromEnums(
                               textTheme, "Готовые элементы", values),
                         ]),
+                    SizedBox(
+                        height: 500,
+                        child: canvasModelEditor(state.canvasModel)),
                   ],
                 );
               }
@@ -141,16 +133,26 @@ class _CanvasScreenState extends State<CanvasScreen> {
         ));
   }
 
-  ListView linesList(Figure figure) {
+  ListView canvasModelEditor(CanvasModel model) {
     return ListView.builder(
         itemBuilder: (context, i) {
           return LineTile(
-            figure: figure,
             index: i,
+            line: model.figure.lines[i],
+            changeLineCall: (int index, Line newLine) {
+              setState(() {
+                model.changeLine(index, newLine);
+              });
+            },
+            insertNewLine: (int index) {
+              setState(() {
+                model.insertNewLine(index);
+              });
+            },
           );
         },
         // separatorBuilder: (context, index) => const Divider(),
-        itemCount: figure.length);
+        itemCount: model.figure.lines.length);
   }
 
   Widget canvasField(CanvasModel canvasModel) {

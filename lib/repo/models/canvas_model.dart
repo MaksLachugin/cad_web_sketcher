@@ -5,17 +5,28 @@ import 'dart:ui';
 
 import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
 import 'package:cad_web_sketcher/repo/models/figure.dart';
+import 'package:cad_web_sketcher/repo/models/line.dart';
 import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 
 class CanvasModel {
   Offset pozCamera = const Offset(0, 0);
   Size sizeOfScreen = const Size(700, 700);
   double angle = 0;
-
   Figure figure;
   CanvasModel({
     required this.figure,
   });
+
+  void changeLine(int index, Line line) {
+    figure.lines[index] = line;
+  }
+
+  void insertNewLine(
+    int index,
+  ) {
+    figure.lines.insert(index, Line(5, 5));
+  }
+
   CanvasModel.fromEnum(Enum element) : figure = Figure() {
     switch (element.runtimeType) {
       case const (RoofElements):
