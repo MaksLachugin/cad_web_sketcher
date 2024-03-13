@@ -15,6 +15,7 @@ class CanvasScreen extends StatefulWidget {
 }
 
 class _CanvasScreenState extends State<CanvasScreen> {
+  int selectedLine = 1;
   final _canvasScreenBloc = CanvasScreenBloc();
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -40,10 +41,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
-    var values = [
-      (RoofElements.abutment.className, RoofElements.values),
-      (Parapets.flat.className, Parapets.values)
-    ];
 
     String vers = _packageInfo.version;
     return Scaffold(
@@ -54,40 +51,42 @@ class _CanvasScreenState extends State<CanvasScreen> {
             bloc: _canvasScreenBloc,
             builder: (context, state) {
               if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
-                return Column(
+                CanvasModel model = state.canvasModel;
+                return Flex(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  direction: Axis.horizontal,
                   children: [
-                    canvasField(state.canvasModel),
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Поворот элемента на эскизе: ",
-                                style: textTheme.bodyLarge,
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  state.canvasModel.angle -= 5;
-                                },
-                                icon: const Icon(Icons.rotate_left),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  state.canvasModel.angle += 5;
-                                },
-                                icon: const Icon(Icons.rotate_right),
-                              ),
-                            ],
-                          ),
-                          expansionsTileFromEnums(
-                              textTheme, "Готовые элементы", values),
-                        ]),
+                    GestureDetector(
+                      child: canvasField(model, selectedLine),
+                      onTapDown: (details) {
+                        var i = model.indexOfNearLine(
+                            details.localPosition, const Size(600, 600));
+                        setState(() {
+                          selectedLine = i;
+                        });
+                      },
+                    ),
                     SizedBox(
-                        height: 500,
-                        child: canvasModelEditor(state.canvasModel)),
+                      width: 300,
+                      // child: canvasModelEditor(state.canvasModel),
+                      child: selectedLine != -1
+                          ? LineTile(
+                              index: selectedLine,
+                              line: model.figure.lines[selectedLine],
+                              changeLineCall: (int index, Line newLine) {
+                                setState(() {
+                                  model.changeLine(index, newLine);
+                                });
+                              },
+                              insertNewLine: (int index) {
+                                setState(() {
+                                  model.insertNewLine(index);
+                                  selectedLine += 1;
+                                });
+                              },
+                            )
+                          : Container(),
+                    ),
                   ],
                 );
               }
@@ -155,15 +154,53 @@ class _CanvasScreenState extends State<CanvasScreen> {
         itemCount: model.figure.lines.length);
   }
 
-  Widget canvasField(CanvasModel canvasModel) {
+  Widget canvasField(CanvasModel canvasModel, int selectedLine) {
+    var textTheme = Theme.of(context).textTheme;
+    var values = [
+      (RoofElements.abutment.className, RoofElements.values),
+      (Parapets.flat.className, Parapets.values)
+    ];
     return Center(
-      child: SizedBox(
-        height: 900,
-        width: 900,
-        child: Card(
-          color: const Color.fromARGB(255, 193, 201, 194),
-          child: CanvasWidget(canvasModel: canvasModel),
-        ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 600,
+            width: 600,
+            child: Card(
+              color: const Color.fromARGB(255, 193, 201, 194),
+              child: CanvasWidget(
+                  canvasModel: canvasModel, selected: selectedLine),
+            ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Поворот элемента на эскизе: ",
+                    style: textTheme.bodyLarge,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      canvasModel.angle -= 5;
+                    },
+                    icon: const Icon(Icons.rotate_left),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      canvasModel.angle += 5;
+                    },
+                    icon: const Icon(Icons.rotate_right),
+                  ),
+                ],
+              ),
+              expansionsTileFromEnums(textTheme, "Готовые элементы", values),
+            ],
+          ),
+        ],
       ),
     );
   }

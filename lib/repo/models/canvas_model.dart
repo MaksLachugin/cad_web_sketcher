@@ -24,7 +24,7 @@ class CanvasModel {
   void insertNewLine(
     int index,
   ) {
-    figure.lines.insert(index, Line(5, 5));
+    figure.lines.insert(index, Line(50, 180));
   }
 
   CanvasModel.fromEnum(Enum element) : figure = Figure() {
@@ -133,6 +133,22 @@ class CanvasModel {
     // points = scaleToScreen(points, size, scale);
     points = goToCenterOfScreen(points, size);
     return points;
+  }
+
+  int indexOfNearLine(Offset point, Size size) {
+    List<Offset> points = getPointsToDraw(size, 0.8);
+    int index = 0;
+    double minDist = double.infinity;
+    for (var i = 0; i < points.length - 1; i++) {
+      var dist = distanseToLine(point, points[i], points[i + 1]);
+      if (dist < minDist) {
+        minDist = dist;
+        index = i;
+      }
+    }
+
+    if (minDist > 10) return -1;
+    return index;
   }
 
   List<Offset> rotateFigure(List<Offset> points, Size size) {

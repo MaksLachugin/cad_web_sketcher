@@ -4,22 +4,32 @@ import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:flutter/material.dart';
 
 class CanvasWidget extends StatelessWidget {
-  const CanvasWidget({super.key, required this.canvasModel});
-
+  final int selected;
   final CanvasModel canvasModel;
+
+  const CanvasWidget(
+      {super.key, required this.selected, required this.canvasModel});
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: MyPainter(canvasModel),
+      painter: MyPainter(canvasModel, selected),
     );
   }
 }
 
 class MyPainter extends CustomPainter {
+  final int selected;
   final CanvasModel canvasModel;
   Paint get linePainter {
     Paint painter = Paint()..color = Colors.grey.shade700;
     painter.strokeWidth = 2;
+    painter.strokeCap = StrokeCap.round;
+    return painter;
+  }
+
+  Paint get selectedLinePainter {
+    Paint painter = Paint()..color = Colors.green;
+    painter.strokeWidth = 3;
     painter.strokeCap = StrokeCap.round;
     return painter;
   }
@@ -38,11 +48,18 @@ class MyPainter extends CustomPainter {
     return painter;
   }
 
-  MyPainter(this.canvasModel);
+  MyPainter(this.canvasModel, this.selected);
 
   @override
   void paint(Canvas canvas, Size size) {
     List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size, 0.8);
+
+    if (selected != -1) {
+      canvas.drawPoints(
+          PointMode.polygon,
+          [pointsToDraw[selected], pointsToDraw[selected + 1]],
+          selectedLinePainter);
+    }
     drawFigure(canvas, pointsToDraw, size);
     drawListPointAndText(
         size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));

@@ -50,9 +50,9 @@ class Line extends Equatable {
 }
 
 double convert(angle) {
-  if (angle >= 180) {
+  if (angle >= 181) {
     return -179;
-  } else if (angle <= -180) {
+  } else if (angle <= -181) {
     return 179;
   }
   return angle;

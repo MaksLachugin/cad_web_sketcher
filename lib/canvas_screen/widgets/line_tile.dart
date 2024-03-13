@@ -10,13 +10,13 @@ class LineTile extends StatelessWidget {
     required this.index,
     required this.line,
     required this.changeLineCall,
-    required this.insertNewLine,
+    this.insertNewLine,
   })  : controller1 = TextEditingController(text: line.angle.toString()),
         controller2 = TextEditingController(text: line.len.toString());
   final int index;
   final Line line;
   final Function(int index, Line newLine) changeLineCall;
-  final Function(int index) insertNewLine;
+  final Function(int index)? insertNewLine;
 
   final TextEditingController controller1;
   final TextEditingController controller2;
@@ -34,11 +34,13 @@ class LineTile extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                IconButton(
-                    onPressed: () {
-                      insertNewLine(index);
-                    },
-                    icon: const Icon(Icons.add)),
+                (insertNewLine != null)
+                    ? IconButton(
+                        onPressed: () {
+                          insertNewLine!(index);
+                        },
+                        icon: const Icon(Icons.add))
+                    : Container(),
                 SizedBox(
                   width: 100,
                   child: Row(
@@ -83,11 +85,14 @@ class LineTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                    onPressed: () {
-                      insertNewLine(index + 1);
-                    },
-                    icon: const Icon(Icons.add)),
+                (insertNewLine != null)
+                    ? IconButton(
+                        onPressed: () {
+                          insertNewLine!(index + 1);
+                        },
+                        icon: const Icon(Icons.add),
+                      )
+                    : Container(),
               ],
             ),
           ),
@@ -99,17 +104,13 @@ class LineTile extends StatelessWidget {
   void changeAngle(String angle) {
     if (expAngle.hasMatch(angle)) {
       changeLineCall(index, line.copyWith(angle: double.parse(angle)));
-    } else {
-      print("-1");
-    }
+    } else {}
   }
 
   void changeLen(String len) {
     if (expLen.hasMatch(len)) {
       changeLine(controller1.text, len);
-    } else {
-      print("-2");
-    }
+    } else {}
   }
 
   void changeLine(String angle, String len) {
