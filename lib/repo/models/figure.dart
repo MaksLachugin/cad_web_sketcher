@@ -1,21 +1,12 @@
 import 'dart:ui';
 
+import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
 import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 import 'package:equatable/equatable.dart';
 import 'line.dart';
 
 class Figure extends Equatable {
-  List<bool> _bending = List.filled(2, false);
-
-  List<bool> get bending => _bending;
-
-  set bending(List<bool> value) {
-    if (value.length == 2) {
-      _bending = value;
-    } else {
-      throw Exception("На листе может быть только 2 загиба");
-    }
-  }
+  var bending = List<Bending>.filled(2, Bending.inside);
 
   List<Line> bendingLine = List.filled(2, Line(15, 0));
   List<Line> lines = <Line>[];
@@ -42,7 +33,7 @@ class Figure extends Equatable {
     List<Offset> res = <Offset>[];
     Offset first = startPoint;
     res.add(first);
-    for (var line in lines) {
+    for (var line in linesWithBending()) {
       (first, ang) = getEndPoint(ang, line, first);
 
       res.add(first);
@@ -75,15 +66,48 @@ class Figure extends Equatable {
     return res;
   }
 
+  List<Line> linesWithBending() {
+    List<Line> lst = [];
+    lst.addAll(lines);
+
+    switch (bending[0]) {
+      case Bending.absent:
+        break;
+      case Bending.outside:
+        lst.insertAll(0, [
+          Line(15, 0),
+          Line(2.5, -90),
+        ]);
+        lst[2] = lst[2].copyWith(angle: -90);
+
+      case Bending.inside:
+        lst.insertAll(0, [
+          Line(15, 0),
+          Line(2.5, 90),
+        ]);
+        lst[2] = lst[2].copyWith(angle: 90);
+    }
+
+    switch (bending[1]) {
+      case Bending.absent:
+        break;
+
+      case Bending.outside:
+        lst.addAll([
+          Line(2.5, -90),
+          Line(15, -90),
+        ]);
+
+      case Bending.inside:
+        lst.addAll([
+          Line(2.5, 90),
+          Line(15, 90),
+        ]);
+    }
+
+    return lst;
+  }
+
   @override
   List<Object?> get props => [startPoint, lines];
-}
-
-Figure genFig() {
-  Figure figure = Figure(const Offset(150, 150));
-  figure.addLine(0, 500);
-  figure.addLine(90, 500);
-  figure.addLine(180, 600);
-  figure.addLine(-90, 500);
-  return figure;
 }

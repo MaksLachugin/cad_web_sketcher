@@ -57,23 +57,34 @@ class MyPainter extends CustomPainter {
     if (selected != -1) {
       canvas.drawPoints(
           PointMode.polygon,
-          [pointsToDraw[selected], pointsToDraw[selected + 1]],
+          [
+            pointsToDraw[canvasModel.getTrueIndex(selected)],
+            pointsToDraw[canvasModel.getTrueIndex(selected) + 1]
+          ],
           selectedLinePainter);
     }
-    drawFigure(canvas, pointsToDraw, size);
-    drawListPointAndText(
-        size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
-    drawListPointAndText(
-        size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
+    drawFigure(canvas, pointsToDraw);
+
+    // drawListPointAndText(
+    //     size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
+    // drawListPointAndText(
+    //     size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
+    // for (var element in pointsBending) {
+    //   drawBending(canvas, element);
+    // }
   }
 
   void drawCanvasModel(CanvasModel cm) {}
 
-  void drawFigure(Canvas canvas, List<Offset> points, Size size) {
+  void drawFigure(Canvas canvas, List<Offset> points) {
     canvas.drawPoints(PointMode.polygon, points, linePainter);
     canvas.drawPoints(PointMode.points, points, pointPainter);
     canvas.drawPoints(PointMode.points, [canvasModel.getCenterOfFigure(points)],
         colorPainter);
+  }
+
+  void drawBending(Canvas canvas, List<Offset> element) {
+    canvas.drawPoints(PointMode.polygon, element, linePainter);
   }
 
   void drawListPointAndText(

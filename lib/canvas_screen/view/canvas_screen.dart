@@ -1,6 +1,7 @@
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
 import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
+import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
 import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:cad_web_sketcher/repo/models/models.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,9 @@ class CanvasScreen extends StatefulWidget {
 }
 
 class _CanvasScreenState extends State<CanvasScreen> {
-  int selectedLine = 1;
+  int selectedLine = 0;
+  List<bool> _isSelectedStart = [false, false, false];
+  List<bool> _isSelectedEnd = [false, false, false];
   final _canvasScreenBloc = CanvasScreenBloc();
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
@@ -52,6 +55,10 @@ class _CanvasScreenState extends State<CanvasScreen> {
             builder: (context, state) {
               if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
                 CanvasModel model = state.canvasModel;
+                _isSelectedStart[
+                    Bending.values.indexOf(model.getStartBending())] = true;
+                _isSelectedEnd[Bending.values.indexOf(model.getEndBending())] =
+                    true;
                 return Flex(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   direction: Axis.horizontal,
@@ -59,33 +66,97 @@ class _CanvasScreenState extends State<CanvasScreen> {
                     GestureDetector(
                       child: canvasField(model, selectedLine),
                       onTapDown: (details) {
-                        var i = model.indexOfNearLine(
-                            details.localPosition, const Size(600, 600));
+                        var i = model.indexOfNearLine(details.localPosition,
+                            const Size(600, 600), selectedLine);
                         setState(() {
                           selectedLine = i;
                         });
                       },
                     ),
-                    SizedBox(
-                      width: 300,
-                      // child: canvasModelEditor(state.canvasModel),
-                      child: selectedLine != -1
-                          ? LineTile(
-                              index: selectedLine,
-                              line: model.figure.lines[selectedLine],
-                              changeLineCall: (int index, Line newLine) {
-                                setState(() {
-                                  model.changeLine(index, newLine);
-                                });
-                              },
-                              insertNewLine: (int index) {
-                                setState(() {
-                                  model.insertNewLine(index);
-                                  selectedLine += 1;
-                                });
-                              },
-                            )
-                          : Container(),
+                    Column(
+                      children: [
+                        SizedBox(
+                          child: selectedLine != -1
+                              ? LineTile(
+                                  index: selectedLine,
+                                  line: model.figure.lines[selectedLine],
+                                  changeLineCall: (int index, Line newLine) {
+                                    setState(() {
+                                      model.changeLine(index, newLine);
+                                    });
+                                  },
+                                  insertNewLine: (int index) {
+                                    setState(() {
+                                      model.insertNewLine(index);
+                                      selectedLine += 1;
+                                    });
+                                  },
+                                )
+                              : Container(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text("Первый подгиб"),
+                              ),
+                              ToggleButtons(
+                                isSelected: _isSelectedStart,
+                                onPressed: (index) {
+                                  setState(() {
+                                    if (!_isSelectedStart[index]) {
+                                      _isSelectedStart =
+                                          List.generate(3, (index) => false);
+                                      _isSelectedStart[index] =
+                                          !_isSelectedStart[index];
+                                      model.setStartBending(
+                                          Bending.values[index]);
+                                    }
+                                  });
+                                },
+                                children: [
+                                  const Icon(Icons.arrow_left),
+                                  const Icon(Icons.remove),
+                                  const Icon(Icons.arrow_right),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text("Конечный подгиб"),
+                              ),
+                              ToggleButtons(
+                                isSelected: _isSelectedEnd,
+                                onPressed: (index) {
+                                  setState(() {
+                                    if (!_isSelectedEnd[index]) {
+                                      _isSelectedEnd =
+                                          List.generate(3, (index) => false);
+                                      _isSelectedEnd[index] =
+                                          !_isSelectedEnd[index];
+                                      model
+                                          .setEndBending(Bending.values[index]);
+                                    }
+                                  });
+                                },
+                                children: [
+                                  const Icon(Icons.arrow_left),
+                                  const Icon(Icons.remove),
+                                  const Icon(Icons.arrow_right),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   ],
                 );

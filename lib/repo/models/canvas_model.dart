@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
+import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
 import 'package:cad_web_sketcher/repo/models/figure.dart';
 import 'package:cad_web_sketcher/repo/models/line.dart';
 import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
@@ -32,95 +33,95 @@ class CanvasModel {
       case const (RoofElements):
         switch (element) {
           case RoofElements.abutment:
-            angle = -90;
+            angle = 90;
             figure.addLine(0, 100);
             figure.addLine(-90, 150);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.drip:
             angle = 180;
             figure.addLine(0, 60);
             figure.addLine(135, 40);
-            figure.bending = [false, true];
+            figure.bending = [Bending.absent, Bending.inside];
           case RoofElements.simpleRidge:
-            angle = 135;
+            angle = -45;
             figure.addLine(0, 150);
             figure.addLine(90, 150);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.snowStop:
-            angle = 180;
+            angle = 0;
             figure.addLine(0, 30);
             figure.addLine(-110, 90);
             figure.addLine(55, 110);
             figure.addLine(-125, 30);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.valleyBottom:
-            angle = -145;
+            angle = 35;
             figure.addLine(0, 150);
             figure.addLine(125, 30);
             figure.addLine(-90, 40);
             figure.addLine(-90, 30);
             figure.addLine(125, 150);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.curvedRidge:
-            angle = 135;
+            angle = -45;
             figure.addLine(0, 150);
             figure.addLine(-135, 30);
             figure.addLine(90, 40);
             figure.addLine(90, 30);
             figure.addLine(-135, 150);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.endStripsForMetalRoofTiles:
-            angle = 120;
+            angle = -60;
             figure.addLine(0, 20);
             figure.addLine(120, 90);
             figure.addLine(90, 85);
             figure.addLine(-135, 20);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.valleyTop:
-            angle = -145;
+            angle = 35;
             figure.addLine(0, 145);
             figure.addLine(-110, 150);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.frontalLStrip:
             angle = -90;
             figure.addLine(0, 100);
             figure.addLine(-90, 20);
-            figure.bending = [false, true];
+            figure.bending = [Bending.absent, Bending.outside];
           case RoofElements.endCapForSoftFoofs:
             angle = 180;
             figure.addLine(0, 60);
             figure.addLine(-135, 25);
             figure.addLine(45, 80);
-            figure.bending = [false, true];
+            figure.bending = [Bending.absent, Bending.inside];
         }
         break;
       case const (Parapets):
         switch (element) {
           case Parapets.flat:
-            angle = 135;
+            angle = -45;
             figure.addLine(0, 20);
             figure.addLine(-135, 40);
             figure.addLine(90, 150);
             figure.addLine(90, 40);
             figure.addLine(-135, 20);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
 
           case Parapets.shaped:
-            angle = 135;
+            angle = -45;
             figure.addLine(0, 20);
             figure.addLine(-135, 40);
             figure.addLine(120, 100);
             figure.addLine(120, 100);
             figure.addLine(120, 40);
             figure.addLine(-135, 20);
-            figure.bending = [true, true];
+            figure.bending = [Bending.inside, Bending.inside];
           default:
         }
       default:
         angle = -90;
         figure.addLine(0, 100);
 
-        figure.bending = [true, true];
+        figure.bending = [Bending.inside, Bending.inside];
     }
   }
 
@@ -130,14 +131,13 @@ class CanvasModel {
         .toList();
 
     points = rotateFigure(points, size);
-    // points = scaleToScreen(points, size, scale);
     points = goToCenterOfScreen(points, size);
     return points;
   }
 
-  int indexOfNearLine(Offset point, Size size) {
-    List<Offset> points = getPointsToDraw(size, 0.8);
-    int index = 0;
+  int indexOfNearLine(Offset point, Size size, int before) {
+    List<Offset> points = ignoreBendingLine(getPointsToDraw(size, 0.8));
+    int index = before;
     double minDist = double.infinity;
     for (var i = 0; i < points.length - 1; i++) {
       var dist = distanseToLine(point, points[i], points[i + 1]);
@@ -147,7 +147,7 @@ class CanvasModel {
       }
     }
 
-    if (minDist > 10) return -1;
+    if (minDist > 10) return before;
     return index;
   }
 
@@ -236,5 +236,45 @@ class CanvasModel {
         angles.length,
         (index) =>
             ((points[index] + points[index + 1]) / 2, "${angles[index]}мм"));
+  }
+
+  int getTrueIndex(int selectedLine) {
+    if (figure.bending[0] == Bending.absent) {
+      return selectedLine;
+    }
+    return selectedLine + 2;
+  }
+
+  List<Offset> ignoreBendingLine(List<Offset> pointsToDraw) {
+    List<Offset> res = List.from(pointsToDraw);
+    if (figure.bending[0] != Bending.absent) {
+      res.removeAt(0);
+      res.removeAt(0);
+    }
+    if (figure.bending[1] != Bending.absent) {
+      res.removeAt(res.length - 1);
+      res.removeAt(res.length - 1);
+    }
+
+    return res;
+  }
+
+  void setStartBending(Bending bending) {
+    if (bending == Bending.absent || figure.bending[0] == Bending.absent) {
+      angle += 180;
+    }
+    figure.bending[0] = bending;
+  }
+
+  void setEndBending(Bending bending) {
+    figure.bending[1] = bending;
+  }
+
+  Bending getStartBending() {
+    return figure.bending[0];
+  }
+
+  Bending getEndBending() {
+    return figure.bending[1];
   }
 }
