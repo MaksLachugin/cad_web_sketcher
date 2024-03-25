@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
 import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
@@ -54,6 +56,8 @@ class _CanvasScreenState extends State<CanvasScreen> {
             bloc: _canvasScreenBloc,
             builder: (context, state) {
               if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
+                var size = min(MediaQuery.of(context).size.width - 300,
+                    MediaQuery.of(context).size.height - 50);
                 CanvasModel model = state.canvasModel;
                 _isSelectedStart[
                     Bending.values.indexOf(model.getStartBending())] = true;
@@ -64,10 +68,14 @@ class _CanvasScreenState extends State<CanvasScreen> {
                   direction: Axis.horizontal,
                   children: [
                     GestureDetector(
-                      child: canvasField(model, selectedLine),
+                      child: canvasField(model, selectedLine, Size(size, size)),
                       onTapDown: (details) {
+                        model.pozCamera = details.localPosition;
                         var i = model.indexOfNearLine(details.localPosition,
-                            const Size(600, 600), selectedLine);
+                            Size(size, size), selectedLine);
+                        if (i == selectedLine) {
+                          i = -1;
+                        }
                         setState(() {
                           selectedLine = i;
                         });
@@ -116,10 +124,10 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                     }
                                   });
                                 },
-                                children: [
-                                  const Icon(Icons.arrow_left),
-                                  const Icon(Icons.remove),
-                                  const Icon(Icons.arrow_right),
+                                children: const [
+                                  Icon(Icons.arrow_left),
+                                  Icon(Icons.remove),
+                                  Icon(Icons.arrow_right),
                                 ],
                               ),
                             ],
@@ -147,10 +155,10 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                     }
                                   });
                                 },
-                                children: [
-                                  const Icon(Icons.arrow_left),
-                                  const Icon(Icons.remove),
-                                  const Icon(Icons.arrow_right),
+                                children: const [
+                                  Icon(Icons.arrow_left),
+                                  Icon(Icons.remove),
+                                  Icon(Icons.arrow_right),
                                 ],
                               ),
                             ],
@@ -183,6 +191,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 
   void callReDrawWithNewFigure(Enum value) {
+    setState(() {
+      selectedLine = -1;
+    });
     _canvasScreenBloc.add(ReDrawCanvasScreen(CanvasModel.fromEnum(value)));
   }
 
@@ -225,7 +236,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
         itemCount: model.figure.lines.length);
   }
 
-  Widget canvasField(CanvasModel canvasModel, int selectedLine) {
+  Widget canvasField(CanvasModel canvasModel, int selectedLine, Size size) {
     var textTheme = Theme.of(context).textTheme;
     var values = [
       (RoofElements.abutment.className, RoofElements.values),
@@ -235,9 +246,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
       child: Column(
         children: [
           SizedBox(
-            height: 600,
-            width: 600,
-            child: Card(
+            height: size.height,
+            width: size.width,
+            child: Container(
               color: const Color.fromARGB(255, 193, 201, 194),
               child: CanvasWidget(
                   canvasModel: canvasModel, selected: selectedLine),

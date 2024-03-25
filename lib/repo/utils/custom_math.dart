@@ -20,15 +20,31 @@ double sinDegree(double degree) {
 }
 
 double distanseToLine(Offset point, Offset p1, Offset p2) {
+  // double d = 1;
+  // double dx1 = p2.dx - p1.dx;
+  // double dy1 = p2.dy - p1.dy;
+
+  // double dx = point.dx - p1.dx;
+  // double dy = point.dy - p1.dy;
+
+  // double S = dx1 * dy + dx * dy1;
+  // double ab = math.sqrt(dx1 * dx1 + dy1 * dy1);
+
+  // double h = S / ab;
+  // return h.abs() / 2;
+
   var a = lineFunction(p1, p2).$1;
   var b = lineFunction(p1, p2).$2;
   var c = lineFunction(p1, p2).$3;
 
   var dist = (a * point.dx + b * point.dy + c).abs() /
       math.sqrt(math.pow(a, 2) + math.pow(b, 2));
-  if (distanseBetweenPoints(p1, p2) / 2 >
-      distanseBetweenPoints(point, (p1 + p2) / 2)) return dist;
-  return dist * 100;
+  if (math.max(
+          distanseBetweenPoints(p1, point), distanseBetweenPoints(p2, point)) >
+      distanseBetweenPoints(p1, p2)) {
+    dist = 100;
+  }
+  return dist;
 }
 
 (double, double, double) lineFunction(Offset p1, Offset p2) {

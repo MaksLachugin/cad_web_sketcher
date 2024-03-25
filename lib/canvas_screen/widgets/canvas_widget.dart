@@ -36,7 +36,7 @@ class MyPainter extends CustomPainter {
 
   Paint get pointPainter {
     Paint painter = Paint()..color = Colors.red;
-    painter.strokeWidth = 4;
+    painter.strokeWidth = 1;
     painter.strokeCap = StrokeCap.round;
     return painter;
   }
@@ -65,13 +65,10 @@ class MyPainter extends CustomPainter {
     }
     drawFigure(canvas, pointsToDraw);
 
-    // drawListPointAndText(
-    //     size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
-    // drawListPointAndText(
-    //     size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
-    // for (var element in pointsBending) {
-    //   drawBending(canvas, element);
-    // }
+    drawListPointAndText(
+        size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
+    drawListPointAndText(
+        size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
   }
 
   void drawCanvasModel(CanvasModel cm) {}

@@ -168,7 +168,8 @@ class CanvasModel {
   CanvasModel.empty() : figure = Figure();
 
   Offset getCenterOfFigure(List<Offset> points) {
-    return points.reduce((a, b) => a + b) / (points.length as double);
+    var clearPoints = ignoreBendingLine(points);
+    return clearPoints.reduce((a, b) => a + b) / (clearPoints.length as double);
   }
 
   List<Offset> scaleToScreen(List<Offset> points, Size size, double scale) {
@@ -225,12 +226,15 @@ class CanvasModel {
   }
 
   List<(Offset, String)> angelTextPointsToDraw(List<Offset> points, Size size) {
+    points = ignoreBendingLine(points);
     List<String> angles = figure.listAngle();
     return List.generate(angles.length - 1,
         (index) => (points[index + 1], "${angles[index + 1]}°"));
   }
 
   List<(Offset, String)> lenTextPointsToDraw(List<Offset> points, Size size) {
+    points = ignoreBendingLine(points);
+
     List<String> angles = figure.listLen();
     return List.generate(
         angles.length,
