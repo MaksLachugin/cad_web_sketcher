@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
+import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_field.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
-import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
 import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
 import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:cad_web_sketcher/repo/models/models.dart';
@@ -18,7 +18,6 @@ class CanvasScreen extends StatefulWidget {
 }
 
 class _CanvasScreenState extends State<CanvasScreen> {
-  int selectedLine = 0;
   List<bool> _isSelectedStart = [false, false, false];
   List<bool> _isSelectedEnd = [false, false, false];
   final _canvasScreenBloc = CanvasScreenBloc();
@@ -56,32 +55,34 @@ class _CanvasScreenState extends State<CanvasScreen> {
             bloc: _canvasScreenBloc,
             builder: (context, state) {
               if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
-                var size = min(MediaQuery.of(context).size.width - 300,
-                    MediaQuery.of(context).size.height - 50);
+                Size widgetSize = MediaQuery.of(context).size;
+
+                var size = widgetSize.width >= 900
+                    ? min(widgetSize.width - 300, widgetSize.height - 100)
+                    : min(widgetSize.width - 100, widgetSize.height - 100);
+                Size canvasSize = Size(size, size);
                 CanvasModel model = state.canvasModel;
-                _isSelectedStart[
-                    Bending.values.indexOf(model.getStartBending())] = true;
-                _isSelectedEnd[Bending.values.indexOf(model.getEndBending())] =
-                    true;
+                int selectedLine = state.selectedLine;
+                _isSelectedStart = setTrueInListOfFalse(_isSelectedStart,
+                    Bending.values.indexOf(model.getStartBending()));
+                _isSelectedEnd = setTrueInListOfFalse(_isSelectedEnd,
+                    Bending.values.indexOf(model.getStartBending()));
+
                 return Flex(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  direction: Axis.horizontal,
+                  direction:
+                      widgetSize.width >= 900 ? Axis.horizontal : Axis.vertical,
                   children: [
-                    GestureDetector(
-                      child: canvasField(model, selectedLine, Size(size, size)),
-                      onTapDown: (details) {
-                        model.pozCamera = details.localPosition;
-                        var i = model.indexOfNearLine(details.localPosition,
-                            Size(size, size), selectedLine);
-                        if (i == selectedLine) {
-                          i = -1;
-                        }
-                        setState(() {
-                          selectedLine = i;
-                        });
-                      },
+                    CanvasField(
+                      canvasModel: model,
+                      selectedLine: selectedLine,
+                      size: canvasSize,
+                      rotate: rotate,
+                      newFigure: callNewFigure,
+                      selectLine: selectLine,
                     ),
                     Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
                           child: selectedLine != -1
@@ -89,6 +90,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                   index: selectedLine,
                                   line: model.figure.lines[selectedLine],
                                   changeLineCall: (int index, Line newLine) {
+                                    // Переписать на блок
                                     setState(() {
                                       model.changeLine(index, newLine);
                                     });
@@ -96,7 +98,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                   insertNewLine: (int index) {
                                     setState(() {
                                       model.insertNewLine(index);
-                                      selectedLine += 1;
                                     });
                                   },
                                 )
@@ -105,10 +106,11 @@ class _CanvasScreenState extends State<CanvasScreen> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Первый подгиб"),
+                                padding: EdgeInsets.all(2.0),
+                                child: Text("Начальный подгиб"),
                               ),
                               ToggleButtons(
                                 isSelected: _isSelectedStart,
@@ -136,6 +138,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Padding(
                                 padding: EdgeInsets.all(8.0),
@@ -190,28 +193,16 @@ class _CanvasScreenState extends State<CanvasScreen> {
     );
   }
 
-  void callReDrawWithNewFigure(Enum value) {
-    setState(() {
-      selectedLine = -1;
-    });
-    _canvasScreenBloc.add(ReDrawCanvasScreen(CanvasModel.fromEnum(value)));
+  void callNewFigure(Enum value) {
+    _canvasScreenBloc.add(CallNewFigureCanvasScreen(value));
   }
 
-  Widget expansionsTileFromEnums(
-      TextTheme textTheme, String name, List<(String, List<Enum>)> values) {
-    return SizedBox(
-        width: 270,
-        child: ExpansionTile(
-          title: const Text("Готовые элементы"),
-          children: List.generate(values.length, (index) {
-            var val = values[index];
-            return ExpansionTileByEnumList(
-              name: val.$1,
-              onPress: callReDrawWithNewFigure,
-              values: val.$2.map((e) => (e, getNameOfEnum(e))).toList(),
-            );
-          }),
-        ));
+  void rotate(double v) {
+    _canvasScreenBloc.add(RotateCanvasScreen(v));
+  }
+
+  void selectLine(int v) {
+    _canvasScreenBloc.add(SelectLineCanvasScreen(v));
   }
 
   ListView canvasModelEditor(CanvasModel model) {
@@ -235,55 +226,10 @@ class _CanvasScreenState extends State<CanvasScreen> {
         // separatorBuilder: (context, index) => const Divider(),
         itemCount: model.figure.lines.length);
   }
+}
 
-  Widget canvasField(CanvasModel canvasModel, int selectedLine, Size size) {
-    var textTheme = Theme.of(context).textTheme;
-    var values = [
-      (RoofElements.abutment.className, RoofElements.values),
-      (Parapets.flat.className, Parapets.values)
-    ];
-    return Center(
-      child: Column(
-        children: [
-          SizedBox(
-            height: size.height,
-            width: size.width,
-            child: Container(
-              color: const Color.fromARGB(255, 193, 201, 194),
-              child: CanvasWidget(
-                  canvasModel: canvasModel, selected: selectedLine),
-            ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Поворот элемента на эскизе: ",
-                    style: textTheme.bodyLarge,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      canvasModel.angle -= 5;
-                    },
-                    icon: const Icon(Icons.rotate_left),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      canvasModel.angle += 5;
-                    },
-                    icon: const Icon(Icons.rotate_right),
-                  ),
-                ],
-              ),
-              expansionsTileFromEnums(textTheme, "Готовые элементы", values),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+List<bool> setTrueInListOfFalse(List<bool> list, index) {
+  var res = List.generate(list.length, (index) => false);
+  res[index] = true;
+  return res;
 }
