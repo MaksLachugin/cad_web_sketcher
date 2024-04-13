@@ -3,6 +3,7 @@ import 'package:cad_web_sketcher/cad_web_sketcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
 import 'package:talker_bloc_logger/talker_bloc_logger_settings.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -19,6 +20,8 @@ Future<void> main() async {
       printEventFullData: false,
     ),
   );
+  final pb = PocketBase('https://cadwebsketcherbackend.pockethost.io');
+  GetIt.I.registerSingleton(pb);
 
   WidgetsFlutterBinding.ensureInitialized();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();

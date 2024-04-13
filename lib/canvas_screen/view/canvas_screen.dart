@@ -3,12 +3,13 @@ import 'dart:math';
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_field.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
-import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
-import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
-import 'package:cad_web_sketcher/repo/models/models.dart';
+import 'package:cad_web_sketcher/repo/server/pocketbase_server.dart';
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
+import '../widgets/order_form.dart';
 
 class CanvasScreen extends StatefulWidget {
   const CanvasScreen({super.key});
@@ -66,8 +67,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                 _isSelectedStart = setTrueInListOfFalse(_isSelectedStart,
                     Bending.values.indexOf(model.getStartBending()));
                 _isSelectedEnd = setTrueInListOfFalse(_isSelectedEnd,
-                    Bending.values.indexOf(model.getStartBending()));
-
+                    Bending.values.indexOf(model.getEndBending()));
                 return Flex(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   direction:
@@ -84,25 +84,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          child: selectedLine != -1
-                              ? LineTile(
-                                  index: selectedLine,
-                                  line: model.figure.lines[selectedLine],
-                                  changeLineCall: (int index, Line newLine) {
-                                    // Переписать на блок
-                                    setState(() {
-                                      model.changeLine(index, newLine);
-                                    });
-                                  },
-                                  insertNewLine: (int index) {
-                                    setState(() {
-                                      model.insertNewLine(index);
-                                    });
-                                  },
-                                )
-                              : Container(),
-                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -166,7 +147,40 @@ class _CanvasScreenState extends State<CanvasScreen> {
                               ),
                             ],
                           ),
-                        )
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            // print(state.canvasModel.figure.toJson());
+                            // var can = state.canvasModel;
+                            // var f = await PocketbaseServer()
+                            //     .getFigureByID('ekpplwrnjb2g6yf');
+
+                            // can.figure = f;
+                            // _canvasScreenBloc.add(ReDrawCanvasScreen(can));
+                            // print(f);
+                          },
+                          child: Text('Text'),
+                        ),
+                        SizedBox(
+                          child: selectedLine != -1
+                              ? LineTile(
+                                  index: selectedLine,
+                                  line: model.figure.lines[selectedLine],
+                                  changeLineCall: (int index, Line newLine) {
+                                    // Переписать на блок
+                                    setState(() {
+                                      model.changeLine(index, newLine);
+                                    });
+                                  },
+                                  insertNewLine: (int index) {
+                                    setState(() {
+                                      model.insertNewLine(index);
+                                    });
+                                  },
+                                )
+                              : Container(),
+                        ),
+                        SizedBox(width: 200, child: OrderForm()),
                       ],
                     ),
                   ],

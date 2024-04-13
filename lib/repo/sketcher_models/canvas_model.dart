@@ -2,11 +2,7 @@
 
 import 'dart:math';
 import 'dart:ui';
-
-import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
-import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
-import 'package:cad_web_sketcher/repo/models/figure.dart';
-import 'package:cad_web_sketcher/repo/models/line.dart';
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 
 class CanvasModel {

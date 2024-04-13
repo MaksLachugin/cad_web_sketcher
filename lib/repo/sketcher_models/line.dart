@@ -33,14 +33,14 @@ class Line extends Equatable {
     };
   }
 
+  String toJson() => json.encode(toMap());
+
   factory Line.fromMap(Map<String, dynamic> map) {
     return Line(
       map['len'] as double,
       map['angle'] as double,
     );
   }
-
-  String toJson() => json.encode(toMap());
 
   factory Line.fromJson(String source) =>
       Line.fromMap(json.decode(source) as Map<String, dynamic>);

@@ -1,7 +1,6 @@
 import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_widget.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/expansions_tile_from_enums.dart';
-import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
-import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:flutter/material.dart';
 
 class CanvasField extends StatelessWidget {
@@ -45,7 +44,10 @@ class CanvasField extends StatelessWidget {
               child: Container(
                 color: const Color.fromARGB(255, 193, 201, 194),
                 child: CanvasWidget(
-                    canvasModel: canvasModel, selected: selectedLine),
+                  canvasModel: canvasModel,
+                  selected: selectedLine,
+                  isPrerender: false,
+                ),
               ),
             ),
           ),

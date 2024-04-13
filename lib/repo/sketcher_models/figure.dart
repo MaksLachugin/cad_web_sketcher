@@ -1,22 +1,21 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
 import 'dart:ui';
 
-import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
-import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 import 'package:equatable/equatable.dart';
-import 'line.dart';
+
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
+import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 
 class Figure extends Equatable {
   var bending = List<Bending>.filled(2, Bending.inside);
 
   List<Line> bendingLine = List.filled(2, Line(15, 0));
   List<Line> lines = <Line>[];
+  Figure();
   List<Offset> get pointsToDraw {
     return listLinesToDraw();
   }
-
-  Offset startPoint;
-
-  Figure([this.startPoint = const Offset(0.0, 0.0)]);
 
   get length => lines.length;
 
@@ -31,7 +30,7 @@ class Figure extends Equatable {
   List<Offset> listLinesToDraw() {
     double ang = 0;
     List<Offset> res = <Offset>[];
-    Offset first = startPoint;
+    Offset first = const Offset(0.0, 0.0);
     res.add(first);
     for (var line in linesWithBending()) {
       (first, ang) = getEndPoint(ang, line, first);
@@ -109,5 +108,29 @@ class Figure extends Equatable {
   }
 
   @override
-  List<Object?> get props => [startPoint, lines];
+  List<Object?> get props => [lines, bending];
+
+  factory Figure.fromMap(map) {
+    var f = Figure();
+    var listMapLines = map['lines'] as List<dynamic>;
+    var listBending = map['bending'] as List<dynamic>;
+
+    for (Map<String, dynamic> element in listMapLines) {
+      f.addLine(element['angle'], element['len']);
+    }
+    f.bending = List.generate(
+        2, (index) => Bending.values.byName(listBending[index] as String));
+    return f;
+  }
+
+  Map<String, dynamic> toMap() {
+    var l = List.generate(lines.length, (index) => lines[index].toMap());
+    var b = List.generate(bending.length, (index) => bending[index].name);
+    return <String, dynamic>{
+      'lines': l,
+      'bending': b,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
 }

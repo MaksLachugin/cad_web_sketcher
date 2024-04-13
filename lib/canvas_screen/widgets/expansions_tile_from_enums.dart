@@ -1,5 +1,5 @@
 import 'package:cad_web_sketcher/canvas_screen/widgets/expansion_tile_by_enum_list.dart';
-import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:flutter/material.dart';
 
 class ExpansionsTileFromEnums extends StatelessWidget {

@@ -1,18 +1,23 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
-import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 
 class CanvasWidget extends StatelessWidget {
   final int selected;
   final CanvasModel canvasModel;
-
+  final bool isPrerender;
   const CanvasWidget(
-      {super.key, required this.selected, required this.canvasModel});
+      {super.key,
+      required this.selected,
+      required this.canvasModel,
+      required this.isPrerender});
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: MyPainter(canvasModel, selected),
+      painter: MyPainter(selected, canvasModel, isPrerender),
     );
   }
 }
@@ -20,6 +25,8 @@ class CanvasWidget extends StatelessWidget {
 class MyPainter extends CustomPainter {
   final int selected;
   final CanvasModel canvasModel;
+
+  bool isPrerender;
   Paint get linePainter {
     Paint painter = Paint()..color = Colors.grey.shade700;
     painter.strokeWidth = 2;
@@ -48,13 +55,17 @@ class MyPainter extends CustomPainter {
     return painter;
   }
 
-  MyPainter(this.canvasModel, this.selected);
+  MyPainter(
+    this.selected,
+    this.canvasModel,
+    this.isPrerender,
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
     List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size, 0.8);
 
-    if (selected != -1) {
+    if (selected != -1 && !isPrerender) {
       canvas.drawPoints(
           PointMode.polygon,
           [
@@ -65,10 +76,12 @@ class MyPainter extends CustomPainter {
     }
     drawFigure(canvas, pointsToDraw);
 
-    drawListPointAndText(
-        size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
-    drawListPointAndText(
-        size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
+    if (!isPrerender) {
+      drawListPointAndText(
+          size, canvas, canvasModel.angelTextPointsToDraw(pointsToDraw, size));
+      drawListPointAndText(
+          size, canvas, canvasModel.lenTextPointsToDraw(pointsToDraw, size));
+    }
   }
 
   void drawCanvasModel(CanvasModel cm) {}

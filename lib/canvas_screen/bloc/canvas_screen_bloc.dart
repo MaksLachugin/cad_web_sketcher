@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'package:cad_web_sketcher/repo/models/base_element_enum.dart';
-import 'package:cad_web_sketcher/repo/models/bending_enum.dart';
-import 'package:cad_web_sketcher/repo/models/canvas_model.dart';
+import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-
 part 'canvas_screen_event.dart';
 part 'canvas_screen_state.dart';
 

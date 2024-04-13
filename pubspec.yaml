@@ -21,11 +21,11 @@ dependencies:
   talker_flutter: ^4.0.0
   talker_bloc_logger: ^4.0.0
   cupertino_icons: ^1.0.6
+  pocketbase: ^0.18.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
   flutter_lints: ^3.0.1
 
