@@ -4,12 +4,12 @@ import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_field.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
 import 'package:cad_web_sketcher/repo/server/pocketbase_server.dart';
+import 'package:cad_web_sketcher/repo/server/server_models/order.dart';
 import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
+import 'package:cad_web_sketcher/widgets/order_form_widget/order_form_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
-import '../widgets/order_form.dart';
 
 class CanvasScreen extends StatefulWidget {
   const CanvasScreen({super.key});
@@ -22,6 +22,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
   List<bool> _isSelectedStart = [false, false, false];
   List<bool> _isSelectedEnd = [false, false, false];
   final _canvasScreenBloc = CanvasScreenBloc();
+
   PackageInfo _packageInfo = PackageInfo(
     appName: 'Unknown',
     packageName: 'Unknown',
@@ -148,19 +149,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                             ],
                           ),
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            // print(state.canvasModel.figure.toJson());
-                            // var can = state.canvasModel;
-                            // var f = await PocketbaseServer()
-                            //     .getFigureByID('ekpplwrnjb2g6yf');
-
-                            // can.figure = f;
-                            // _canvasScreenBloc.add(ReDrawCanvasScreen(can));
-                            // print(f);
-                          },
-                          child: Text('Text'),
-                        ),
                         SizedBox(
                           child: selectedLine != -1
                               ? LineTile(
@@ -180,8 +168,35 @@ class _CanvasScreenState extends State<CanvasScreen> {
                                 )
                               : Container(),
                         ),
-                        SizedBox(width: 200, child: OrderForm()),
                       ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 250,
+                            child: OrderFormWidget(sendDataOrder: sendOrder),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 250,
+                            child: TextField(
+                              onSubmitted: (value) {
+                                _canvasScreenBloc.add(LoadNewFigure(id: value));
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 );
@@ -217,6 +232,31 @@ class _CanvasScreenState extends State<CanvasScreen> {
 
   void selectLine(int v) {
     _canvasScreenBloc.add(SelectLineCanvasScreen(v));
+  }
+
+  void sendOrder(
+      String customer,
+      String number,
+      String email,
+      String comment,
+      String width,
+      String count,
+      String color,
+      String thickness,
+      String selectedStatus) {
+    PocketbaseServer().sendOrder(Order(
+      customer: customer,
+      number: number,
+      email: email,
+      comment: comment,
+      figure_json: _canvasScreenBloc.state.canvasModel.figure.toJson(),
+      figure_len: _canvasScreenBloc.state.canvasModel.figure.calkFigureLen(),
+      width: width,
+      count: count,
+      status: selectedStatus,
+      color: color,
+      thickness: thickness,
+    ));
   }
 
   ListView canvasModelEditor(CanvasModel model) {

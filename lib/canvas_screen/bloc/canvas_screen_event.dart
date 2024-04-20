@@ -26,6 +26,15 @@ class RotateCanvasScreen extends CanvasScreenEvent {
   List<Object?> get props => [angle];
 }
 
+class LoadNewFigure extends CanvasScreenEvent {
+  final String id;
+
+  const LoadNewFigure({required this.id});
+
+  @override
+  List<Object?> get props => [id];
+}
+
 class CallNewFigureCanvasScreen extends CanvasScreenEvent {
   const CallNewFigureCanvasScreen(
     this.value,

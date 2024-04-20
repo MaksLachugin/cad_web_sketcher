@@ -5,6 +5,7 @@ import 'package:cad_web_sketcher/repo/server/server_models/order.dart';
 import 'package:cad_web_sketcher/repo/sketcher_models/figure.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class PocketbaseServer implements ADBServer {
   PocketBase pb = GetIt.I<PocketBase>();
@@ -33,7 +34,17 @@ class PocketbaseServer implements ADBServer {
   }
 
   @override
-  void sendOrder(Order order) {
-    // TODO: implement sendOrder
+  Future<void> sendOrder(Order order) async {
+    final record = await pb.collection('Order').create(body: order.toMap());
+    GetIt.I<Talker>().debug(record.toString());
+  }
+
+  @override
+  Future<String> getStandartStatus() async {
+    var record = await pb.collection('Status_base').getList(
+          page: 1,
+          perPage: 1,
+        );
+    return record.items.first.id;
   }
 }

@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:cad_web_sketcher/repo/utils/custom_math.dart';
 
+// ignore: must_be_immutable
 class Figure extends Equatable {
   var bending = List<Bending>.filled(2, Bending.inside);
 
@@ -133,4 +134,10 @@ class Figure extends Equatable {
   }
 
   String toJson() => json.encode(toMap());
+
+  String calkFigureLen() {
+    double res = linesWithBending()
+        .fold(0, (previousValue, element) => previousValue + element.len);
+    return '$res мм';
+  }
 }

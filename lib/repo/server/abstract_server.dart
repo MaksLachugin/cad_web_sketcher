@@ -7,7 +7,7 @@ import 'server_models/metal_thickness.dart';
 abstract class ADBServer {
   Future<List<MetalColor>> getColors();
   Future<List<MetalThickness>> getThickness();
-
+  Future<String> getStandartStatus();
   void sendOrder(Order order);
   Future<Figure> getFigureByID(String id);
 }

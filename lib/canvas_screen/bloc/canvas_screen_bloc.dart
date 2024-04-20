@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cad_web_sketcher/repo/server/pocketbase_server.dart';
 import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ class CanvasScreenBloc extends Bloc<CanvasScreenEvent, CanvasScreenState> {
     on<RotateCanvasScreen>(_rotate);
     on<CallNewFigureCanvasScreen>(_newFigure);
     on<SelectLineCanvasScreen>(_selectLine);
+    on<LoadNewFigure>(_load);
   }
 
   Future<void> _selectLine(
@@ -75,5 +77,15 @@ class CanvasScreenBloc extends Bloc<CanvasScreenEvent, CanvasScreenState> {
   void onError(Object error, StackTrace stackTrace) {
     super.onError(error, stackTrace);
     GetIt.I<Talker>().handle(error, stackTrace);
+  }
+
+  Future<FutureOr<void>> _load(
+      LoadNewFigure event, Emitter<CanvasScreenState> emit) async {
+    try {
+      final fig = await PocketbaseServer().getFigureByID(event.id);
+      emit(CanvasScreenDrawed(CanvasModel(figure: fig), 0));
+    } catch (e, st) {
+      GetIt.I<Talker>().handle(e, st);
+    }
   }
 }

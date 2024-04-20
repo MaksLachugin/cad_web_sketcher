@@ -1,11 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class MetalColor {
+import 'package:equatable/equatable.dart';
+
+class MetalColor extends Equatable {
   final String id;
   final String name;
   final String ral;
-  MetalColor({
+  const MetalColor({
     required this.id,
     required this.name,
     required this.ral,
@@ -56,4 +58,7 @@ class MetalColor {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ ral.hashCode;
+
+  @override
+  List<Object?> get props => [id, name, ral];
 }
