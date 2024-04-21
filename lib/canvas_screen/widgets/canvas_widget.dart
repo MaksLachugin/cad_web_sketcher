@@ -63,6 +63,7 @@ class MyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // TODO: текст наезжает на линии
     List<Offset> pointsToDraw = canvasModel.getPointsToDraw(size, 0.8);
 
     if (selected != -1 && !isPrerender) {

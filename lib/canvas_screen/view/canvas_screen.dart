@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cad_web_sketcher/canvas_screen/bloc/canvas_screen_bloc.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_field.dart';
+import 'package:cad_web_sketcher/canvas_screen/widgets/expansions_tile_from_enums.dart';
 import 'package:cad_web_sketcher/canvas_screen/widgets/widgets.dart';
 import 'package:cad_web_sketcher/repo/server/pocketbase_server.dart';
 import 'package:cad_web_sketcher/repo/server/server_models/order.dart';
@@ -47,6 +48,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
+    GlobalKey _tileKey = GlobalKey();
 
     String vers = _packageInfo.version;
     return Scaffold(
@@ -57,6 +59,11 @@ class _CanvasScreenState extends State<CanvasScreen> {
             bloc: _canvasScreenBloc,
             builder: (context, state) {
               if (state is CanvasScreenDrawed || state is CanvasScreenInitial) {
+                var values = [
+                  (RoofElements.abutment.className, RoofElements.values),
+                  (Parapets.flat.className, Parapets.values)
+                ];
+
                 Size widgetSize = MediaQuery.of(context).size;
 
                 var size = widgetSize.width >= 900
@@ -79,7 +86,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                       selectedLine: selectedLine,
                       size: canvasSize,
                       rotate: rotate,
-                      newFigure: callNewFigure,
                       selectLine: selectLine,
                     ),
                     Column(
@@ -152,6 +158,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
                         SizedBox(
                           child: selectedLine != -1
                               ? LineTile(
+                                  key: _tileKey,
                                   index: selectedLine,
                                   line: model.figure.lines[selectedLine],
                                   changeLineCall: (int index, Line newLine) {
@@ -184,18 +191,28 @@ class _CanvasScreenState extends State<CanvasScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 250,
-                            child: TextField(
-                              onSubmitted: (value) {
-                                _canvasScreenBloc.add(LoadNewFigure(id: value));
-                              },
+                      child: Column(
+                        children: [
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: 250,
+                                child: TextField(
+                                  onSubmitted: (value) {
+                                    _canvasScreenBloc
+                                        .add(LoadNewFigure(id: value));
+                                  },
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          ExpansionsTileFromEnums(
+                            name: "Готовые элементы",
+                            values: values,
+                            callNewFigure: callNewFigure,
+                          )
+                        ],
                       ),
                     ),
                   ],

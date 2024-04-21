@@ -44,6 +44,7 @@ class CanvasModel {
             figure.addLine(90, 150);
             figure.bending = [Bending.inside, Bending.inside];
           case RoofElements.snowStop:
+            // FIXME: надо правильный снежный упор
             angle = 0;
             figure.addLine(0, 30);
             figure.addLine(-110, 90);

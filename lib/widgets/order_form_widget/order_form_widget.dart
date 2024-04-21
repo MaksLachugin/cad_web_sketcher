@@ -128,7 +128,7 @@ class OrderFormWidgetState extends State<OrderFormWidget> {
                     )
                   ],
                   validator: (value) {
-                    if (value == null) {
+                    if (value == null || value.isEmpty) {
                       return 'Укажите ширину детали в мм';
                     }
                     return null;
@@ -147,7 +147,7 @@ class OrderFormWidgetState extends State<OrderFormWidget> {
                     )
                   ],
                   validator: (value) {
-                    if (value == null) {
+                    if (value == null || value.isEmpty) {
                       return 'Укажите количество деталей';
                     }
                     return null;
@@ -203,7 +203,7 @@ class OrderFormWidgetState extends State<OrderFormWidget> {
                           selectesStatus!);
                     }
                   },
-                  child: const Text('Валидировать'),
+                  child: const Text('Отправить заказ'),
                 ),
               ],
             ),

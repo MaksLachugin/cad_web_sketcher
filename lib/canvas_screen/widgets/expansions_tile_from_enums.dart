@@ -24,7 +24,11 @@ class ExpansionsTileFromEnums extends StatelessWidget {
             return ExpansionTileByEnumList(
               name: val.$1,
               onPress: callNewFigure,
-              values: val.$2.map((e) => (e, getNameOfEnum(e))).toList(),
+              values: val.$2
+                  .map(
+                    (e) => (e, getNameOfEnum(e), getAssetImage(e)),
+                  )
+                  .toList(),
             );
           }),
         ));

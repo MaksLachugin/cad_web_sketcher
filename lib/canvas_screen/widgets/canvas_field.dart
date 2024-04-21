@@ -1,5 +1,4 @@
 import 'package:cad_web_sketcher/canvas_screen/widgets/canvas_widget.dart';
-import 'package:cad_web_sketcher/canvas_screen/widgets/expansions_tile_from_enums.dart';
 import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:flutter/material.dart';
 
@@ -10,22 +9,16 @@ class CanvasField extends StatelessWidget {
       required this.selectedLine,
       required this.size,
       required this.rotate,
-      required this.newFigure,
       required this.selectLine});
   final CanvasModel canvasModel;
   final int selectedLine;
   final Size size;
   final void Function(double) rotate;
-  final void Function(Enum value) newFigure;
   final void Function(int value) selectLine;
 
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
-    var values = [
-      (RoofElements.abutment.className, RoofElements.values),
-      (Parapets.flat.className, Parapets.values)
-    ];
     return Center(
       child: Column(
         children: [
@@ -76,11 +69,6 @@ class CanvasField extends StatelessWidget {
                   ),
                 ],
               ),
-              ExpansionsTileFromEnums(
-                name: "Готовые элементы",
-                values: values,
-                callNewFigure: newFigure,
-              )
             ],
           ),
         ],

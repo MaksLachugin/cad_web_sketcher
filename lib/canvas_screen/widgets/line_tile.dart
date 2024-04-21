@@ -6,39 +6,46 @@ import 'package:get_it/get_it.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 class LineTile extends StatefulWidget {
-  LineTile({
+  const LineTile({
     super.key,
     required this.index,
     required this.line,
     required this.changeLineCall,
     required this.insertNewLine,
-  })  : controller1 = TextEditingController(text: line.angle.toString()),
-        controller2 = TextEditingController(text: line.len.toString());
+  });
   final int index;
   final Line line;
   final Function(int index, Line newLine) changeLineCall;
   final Function(int index) insertNewLine;
-
-  final TextEditingController controller1;
-  final TextEditingController controller2;
 
   @override
   State<LineTile> createState() => _LineTileState();
 }
 
 class _LineTileState extends State<LineTile> {
-  final RegExp expAngle = RegExp(r"^(?:-?(?:1[0-7][0-9]|[1-9]?[0-9]|180))$");
+  double len = 0;
+  double angle = 0;
+  late GlobalKey<FormState> _formKey;
+  @override
+  void initState() {
+    super.initState();
+    len = widget.line.len;
+    angle = widget.line.angle;
+    _formKey = GlobalKey<FormState>();
+  }
 
-  final RegExp expLen = RegExp(r"\b(0|[1-9]\d*)\b");
-  late double len;
-  late double angle;
-  final _formKey = GlobalKey<FormState>();
+  @override
+  didUpdateWidget(LineTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index != widget.index) {
+      _formKey = GlobalKey<FormState>();
+      len = widget.line.len;
+      angle = widget.line.angle;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    len = widget.line.len;
-    angle = widget.line.angle;
-
     return Center(
       child: SizedBox(
         width: 300,
@@ -48,17 +55,21 @@ class _LineTileState extends State<LineTile> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                IconButton(
-                    onPressed: () {
-                      widget.insertNewLine(widget.index);
-                    },
-                    icon: const Icon(Icons.add)),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                      onPressed: () {
+                        widget.insertNewLine(widget.index);
+                      },
+                      icon: const Icon(Icons.add)),
+                ),
                 Form(
                   key: _formKey,
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
-                        width: 200,
+                        width: 150,
                         child: Column(
                           children: [
                             TextFormField(
@@ -111,25 +122,26 @@ class _LineTileState extends State<LineTile> {
                           ],
                         ),
                       ),
-                      IconButton(
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              _formKey.currentState!.save();
-                              changeLine(angle, len);
-                            }
-                          },
-                          icon: const Icon(
-                            Icons.send,
-                            size: 50,
-                          ))
+                      TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            _formKey.currentState!.save();
+                            changeLine(angle, len);
+                          }
+                        },
+                        child: const Text("Изменить"),
+                      )
                     ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    widget.insertNewLine(widget.index + 1);
-                  },
-                  icon: const Icon(Icons.add),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    onPressed: () {
+                      widget.insertNewLine(widget.index + 1);
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
                 ),
               ],
             ),
@@ -145,5 +157,9 @@ class _LineTileState extends State<LineTile> {
     widget.changeLineCall(widget.index, newLine);
 
     GetIt.I<Talker>().debug("Что-то изменилось");
+  }
+
+  void reDraw() {
+    setState(() {});
   }
 }

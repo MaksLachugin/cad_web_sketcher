@@ -43,6 +43,31 @@ extension RoofElementsExtension on RoofElements {
         return "Торцевая для мягкой кровли";
     }
   }
+
+  String get imagePath {
+    switch (this) {
+      case RoofElements.abutment:
+        return "png/roof_elements/abutment.png";
+      case RoofElements.drip:
+        return "png/roof_elements/drip.png";
+      case RoofElements.simpleRidge:
+        return "png/roof_elements/simpleRidge.png";
+      case RoofElements.snowStop:
+        return "png/roof_elements/snowStop.png";
+      case RoofElements.valleyBottom:
+        return "png/roof_elements/valleyBottom.png";
+      case RoofElements.curvedRidge:
+        return "png/roof_elements/curvedRidge.png";
+      case RoofElements.endStripsForMetalRoofTiles:
+        return "png/roof_elements/endStripsForMetalRoofTiles.png";
+      case RoofElements.valleyTop:
+        return "png/roof_elements/valleyTop.png";
+      case RoofElements.frontalLStrip:
+        return "png/roof_elements/frontalLStrip.png";
+      case RoofElements.endCapForSoftFoofs:
+        return "png/roof_elements/endCapForSoftFoofs.png";
+    }
+  }
 }
 
 enum Parapets {
@@ -63,6 +88,15 @@ extension ParapetsExtension on Parapets {
         return "Фигурный парапет";
     }
   }
+
+  String get imagePath {
+    switch (this) {
+      case Parapets.flat:
+        return "png/parapets/flat.png";
+      case Parapets.shaped:
+        return "png/parapets/shaped.png";
+    }
+  }
 }
 
 String getNameOfEnum(Enum value) {
@@ -71,6 +105,17 @@ String getNameOfEnum(Enum value) {
       return (value as RoofElements).name;
     case const (Parapets):
       return (value as Parapets).name;
+    default:
+      return "Error";
+  }
+}
+
+String getAssetImage(Enum value) {
+  switch (value.runtimeType) {
+    case const (RoofElements):
+      return (value as RoofElements).imagePath;
+    case const (Parapets):
+      return (value as Parapets).imagePath;
     default:
       return "Error";
   }
