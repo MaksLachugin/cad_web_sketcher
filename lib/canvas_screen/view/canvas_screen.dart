@@ -48,8 +48,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
   @override
   Widget build(BuildContext context) {
     var textTheme = Theme.of(context).textTheme;
-    GlobalKey _tileKey = GlobalKey();
-
     String vers = _packageInfo.version;
     return Scaffold(
       body: SingleChildScrollView(
@@ -158,7 +156,6 @@ class _CanvasScreenState extends State<CanvasScreen> {
                         SizedBox(
                           child: selectedLine != -1
                               ? LineTile(
-                                  key: _tileKey,
                                   index: selectedLine,
                                   line: model.figure.lines[selectedLine],
                                   changeLineCall: (int index, Line newLine) {
@@ -248,7 +245,9 @@ class _CanvasScreenState extends State<CanvasScreen> {
   }
 
   void selectLine(int v) {
-    _canvasScreenBloc.add(SelectLineCanvasScreen(v));
+    if (_canvasScreenBloc.state.selectedLine != v) {
+      _canvasScreenBloc.add(SelectLineCanvasScreen(v));
+    }
   }
 
   void sendOrder(
