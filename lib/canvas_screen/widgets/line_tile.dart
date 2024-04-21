@@ -1,30 +1,44 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:cad_web_sketcher/repo/sketcher_models/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
-class LineTile extends StatelessWidget {
+class LineTile extends StatefulWidget {
   LineTile({
     super.key,
     required this.index,
     required this.line,
     required this.changeLineCall,
-    this.insertNewLine,
+    required this.insertNewLine,
   })  : controller1 = TextEditingController(text: line.angle.toString()),
         controller2 = TextEditingController(text: line.len.toString());
   final int index;
   final Line line;
   final Function(int index, Line newLine) changeLineCall;
-  final Function(int index)? insertNewLine;
+  final Function(int index) insertNewLine;
 
   final TextEditingController controller1;
   final TextEditingController controller2;
+
+  @override
+  State<LineTile> createState() => _LineTileState();
+}
+
+class _LineTileState extends State<LineTile> {
   final RegExp expAngle = RegExp(r"^(?:-?(?:1[0-7][0-9]|[1-9]?[0-9]|180))$");
+
   final RegExp expLen = RegExp(r"\b(0|[1-9]\d*)\b");
+  late double len;
+  late double angle;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    len = widget.line.len;
+    angle = widget.line.angle;
+
     return Center(
       child: SizedBox(
         width: 300,
@@ -34,65 +48,89 @@ class LineTile extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                (insertNewLine != null)
-                    ? IconButton(
-                        onPressed: () {
-                          insertNewLine!(index);
-                        },
-                        icon: const Icon(Icons.add))
-                    : Container(),
-                SizedBox(
-                  width: 100,
+                IconButton(
+                    onPressed: () {
+                      widget.insertNewLine(widget.index);
+                    },
+                    icon: const Icon(Icons.add)),
+                Form(
+                  key: _formKey,
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(
-                          height: 50, child: Center(child: Text('Угол'))),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          // inputFormatters: [
-                          //   FilteringTextInputFormatter.deny(expAngle),
-                          // ],
-                          controller: controller1,
-                          onChanged: (value) => changeAngle(value),
+                      SizedBox(
+                        width: 200,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                                decoration:
+                                    const InputDecoration(labelText: "Угол"),
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Укажите угол';
+                                  }
+                                  var v = int.parse(value);
+                                  if (v > 179 || v < -179) {
+                                    return 'Диапозоне от -179 до 179';
+                                  }
+                                  return null;
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r"[0-9]"),
+                                  )
+                                ],
+                                initialValue: angle.toString(),
+                                onSaved: (newValue) {
+                                  angle = double.parse(newValue!);
+                                }),
+                            TextFormField(
+                              decoration:
+                                  const InputDecoration(labelText: "Длина"),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null) {
+                                  return 'Укажите длину';
+                                }
+                                var v = int.parse(value);
+                                if (v < 1) {
+                                  return 'Длина должна быть больше 0';
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r"[0-9]"),
+                                )
+                              ],
+                              initialValue: len.toString(),
+                              onSaved: (newValue) {
+                                len = double.parse(newValue!);
+                              },
+                            ),
+                          ],
                         ),
                       ),
+                      IconButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              _formKey.currentState!.save();
+                              changeLine(angle, len);
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.send,
+                            size: 50,
+                          ))
                     ],
                   ),
                 ),
-                SizedBox(
-                  width: 100,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(
-                          width: 50, child: Center(child: Text('Длина'))),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Expanded(
-                        child: TextField(
-                          // inputFormatters: [
-                          //   FilteringTextInputFormatter.deny(expLen),
-                          // ],
-                          controller: controller2,
-                          onChanged: (value) => changeLen(value),
-                        ),
-                      ),
-                    ],
-                  ),
+                IconButton(
+                  onPressed: () {
+                    widget.insertNewLine(widget.index + 1);
+                  },
+                  icon: const Icon(Icons.add),
                 ),
-                (insertNewLine != null)
-                    ? IconButton(
-                        onPressed: () {
-                          insertNewLine!(index + 1);
-                        },
-                        icon: const Icon(Icons.add),
-                      )
-                    : Container(),
               ],
             ),
           ),
@@ -101,25 +139,11 @@ class LineTile extends StatelessWidget {
     );
   }
 
-  void changeAngle(String angle) {
-    if (expAngle.hasMatch(angle)) {
-      changeLineCall(index, line.copyWith(angle: double.parse(angle)));
-    } else {}
-  }
+  void changeLine(double angle, double len) {
+    var newLine = widget.line.copyWith(angle: angle, len: len);
 
-  void changeLen(String len) {
-    if (expLen.hasMatch(len)) {
-      changeLine(controller1.text, len);
-    } else {}
-  }
+    widget.changeLineCall(widget.index, newLine);
 
-  void changeLine(String angle, String len) {
-    if (expAngle.hasMatch(angle) && expLen.hasMatch(len)) {
-      var newLine =
-          line.copyWith(angle: double.parse(angle), len: double.parse(len));
-
-      changeLineCall(index, newLine);
-      GetIt.I<Talker>().debug("Что-то изменилось");
-    }
+    GetIt.I<Talker>().debug("Что-то изменилось");
   }
 }

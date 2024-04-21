@@ -21,7 +21,7 @@ class CanvasModel {
   void insertNewLine(
     int index,
   ) {
-    figure.lines.insert(index, Line(50, 180));
+    figure.lines.insert(index, Line(50, 90));
   }
 
   CanvasModel.fromEnum(Enum element) : figure = Figure() {
