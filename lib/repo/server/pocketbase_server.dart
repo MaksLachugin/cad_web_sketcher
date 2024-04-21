@@ -34,9 +34,21 @@ class PocketbaseServer implements ADBServer {
   }
 
   @override
-  Future<void> sendOrder(Order order) async {
-    final record = await pb.collection('Order').create(body: order.toMap());
-    GetIt.I<Talker>().debug(record.toString());
+  Future<String> sendOrder(Order order) async {
+    try {
+      final record = await pb.collection('Order').create(body: order.toMap());
+      GetIt.I<Talker>().debug(record.toString());
+
+      return (record.data.containsKey("code"))
+          ? record.data["message"]
+          : "Запрос отправлен";
+    } on ClientException catch (e) {
+      GetIt.I<Talker>().debug(e);
+      return e.response['message'];
+    } on Exception catch (e) {
+      GetIt.I<Talker>().debug(e);
+      return e.toString();
+    }
   }
 
   @override

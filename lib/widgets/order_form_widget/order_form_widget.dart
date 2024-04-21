@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrderFormWidget extends StatefulWidget {
-  final void Function(
+  final Future<String> Function(
       String customer,
       String number,
       String email,
@@ -45,6 +45,7 @@ class OrderFormWidgetState extends State<OrderFormWidget> {
   String? selectedColor;
   String? selectedThickness;
   String? selectesStatus;
+  String res = '';
 
   @override
   Widget build(BuildContext context) {
@@ -191,20 +192,27 @@ class OrderFormWidgetState extends State<OrderFormWidget> {
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
                       _formKey.currentState!.save();
-                      widget.sendDataOrder(
-                          customer,
-                          number,
-                          email,
-                          comment,
-                          width,
-                          count,
-                          selectedColor!,
-                          selectedThickness!,
-                          selectesStatus!);
+                      widget
+                          .sendDataOrder(
+                              customer,
+                              number,
+                              email,
+                              comment,
+                              width,
+                              count,
+                              selectedColor!,
+                              selectedThickness!,
+                              selectesStatus!)
+                          .then((value) {
+                        setState(() {
+                          res = value;
+                        });
+                      });
                     }
                   },
                   child: const Text('Отправить заказ'),
                 ),
+                (res.isNotEmpty) ? Text(res) : Container()
               ],
             ),
           );

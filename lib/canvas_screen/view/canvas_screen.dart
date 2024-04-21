@@ -250,7 +250,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
     }
   }
 
-  void sendOrder(
+  Future<String> sendOrder(
       String customer,
       String number,
       String email,
@@ -260,7 +260,7 @@ class _CanvasScreenState extends State<CanvasScreen> {
       String color,
       String thickness,
       String selectedStatus) {
-    PocketbaseServer().sendOrder(Order(
+    return PocketbaseServer().sendOrder(Order(
       customer: customer,
       number: number,
       email: email,
